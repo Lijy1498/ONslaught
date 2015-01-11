@@ -12,6 +12,8 @@
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
+int playerX, playerY;
+
 class Sprite
 {
 public:
@@ -102,7 +104,7 @@ void bullet:: setxy(int inputx, int inputy)
 
 void bullet::move()
 {
-    y = y + 1;
+    y = y - 3;
 }
 
 class Ball
@@ -142,6 +144,9 @@ Ball::Ball()
     //Initialize the offsets
     x = SCREEN_WIDTH/4;
     y = SCREEN_HEIGHT - sprite.getHeight()- 3;
+
+    playerX = x;
+    playerY = y;
 
     //Initialize the velocity
     vx = 0;
@@ -204,7 +209,7 @@ void Ball::check()
     }
     else if (state[SDL_SCANCODE_SPACE])
     {
-        //bullet::setxy(x,y);
+
     }
 
     else
@@ -455,7 +460,7 @@ int main( int argc, char* args[] )
 
         //The ball that will be moving around on the screen
         Ball ball;
-        bullet MyBullet(1,4);
+        bullet MyBullet(playerX,playerY);
         //bullet shots [3];
 
         //While application is running
@@ -478,7 +483,7 @@ int main( int argc, char* args[] )
 
             //Move the ball
             ball.move();
-            //bullet.move();
+            MyBullet.move();
 
             //Clear screen
             SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
