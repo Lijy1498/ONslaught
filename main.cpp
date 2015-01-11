@@ -75,11 +75,18 @@ private:
 
 bullet::bullet(int x, int y)
 {
+    setxy(x,y);
+
     //Load dot texture
     if( !sprite.loadFromFile( "bullet.bmp" ) )
     {
         printf( "Failed to load dot texture!\n" );
     }
+}
+
+bullet::~bullet()
+{
+    sprite.free();
 }
 
 void bullet::render()
@@ -93,7 +100,11 @@ void bullet:: setxy(int inputx, int inputy)
     y = inputy;
 }
 
-//void bullet::move();
+void bullet::move()
+{
+    y = y + 1;
+}
+
 class Ball
 {
 public:
@@ -193,7 +204,7 @@ void Ball::check()
     }
     else if (state[SDL_SCANCODE_SPACE])
     {
-        //WHEN firing
+        //bullet::setxy(x,y);
     }
 
     else
@@ -444,6 +455,7 @@ int main( int argc, char* args[] )
 
         //The ball that will be moving around on the screen
         Ball ball;
+        bullet MyBullet(1,4);
         //bullet shots [3];
 
         //While application is running
@@ -466,6 +478,7 @@ int main( int argc, char* args[] )
 
             //Move the ball
             ball.move();
+            //bullet.move();
 
             //Clear screen
             SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
@@ -473,6 +486,7 @@ int main( int argc, char* args[] )
 
             //Render objects
             ball.render();
+            MyBullet.render();
 
             //Update screen
             SDL_RenderPresent( gRenderer );
