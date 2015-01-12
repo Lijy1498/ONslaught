@@ -12,8 +12,6 @@
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-int playerX, playerY;
-
 class Sprite
 {
 public:
@@ -52,7 +50,7 @@ public:
     static const int HEIGHT = 32;
 
     //Initializes the variables
-    bullet(int x, int y);
+    bullet();
     ~bullet();
 
     //Moves the dot
@@ -68,6 +66,9 @@ public:
 
     void setxy(int inputx, int inputy);
 
+int getX();
+int getY();
+
 private:
     //Sprite for the bullet
     Sprite sprite;
@@ -75,10 +76,8 @@ private:
     int x, y;
 };
 
-bullet::bullet(int x, int y)
+bullet::bullet()
 {
-    setxy(x,y);
-
     //Load dot texture
     if( !sprite.loadFromFile( "bullet.bmp" ) )
     {
@@ -107,15 +106,25 @@ void bullet::move()
     y = y - 3;
 }
 
-class Ball
+int bullet::getX()
+{
+    return x;
+}
+
+int bullet::getY()
+{
+    return y;
+}
+
+class Player
 {
 public:
     static const int WIDTH = 32;
     static const int HEIGHT = 32;
 
     //Initializes the variables
-    Ball();
-    ~Ball();
+    Player();
+    ~Player();
 
     //Takes key presses and adjusts the dot's velocity
     void handleEvent( SDL_Event& e );
@@ -126,11 +135,17 @@ public:
     //Checks input
     void check();
 
+    //Get X
+    int getX();
+
+    //Get Y
+    int getY();
+
     //Shows the dot on the screen
     void render();
 
 private:
-    //Sprite for the ball
+    //Sprite for the Player
     Sprite sprite;
     //The X and Y offsets of the dot
     int x, y;
@@ -139,14 +154,11 @@ private:
     int vx, vy;
 };
 
-Ball::Ball()
+Player::Player()
 {
     //Initialize the offsets
     x = SCREEN_WIDTH/4;
     y = SCREEN_HEIGHT - sprite.getHeight()- 3;
-
-    playerX = x;
-    playerY = y;
 
     //Initialize the velocity
     vx = 0;
@@ -159,12 +171,12 @@ Ball::Ball()
     }
 }
 
-Ball::~Ball()
+Player::~Player()
 {
     sprite.free();
 }
 
-void Ball::check()
+void Player::check()
 {
     const Uint8 *state = SDL_GetKeyboardState(NULL);
     if (state[SDL_SCANCODE_UP] && state[SDL_SCANCODE_RIGHT])
@@ -207,11 +219,6 @@ void Ball::check()
         vx = -5;
         vy = 0;
     }
-    else if (state[SDL_SCANCODE_SPACE])
-    {
-
-    }
-
     else
     {
         vy = 0;
@@ -219,7 +226,7 @@ void Ball::check()
     }
 }
 
-void Ball::handleEvent( SDL_Event& e )
+void Player::handleEvent( SDL_Event& e )
 {
     /*
     //If a key was pressed
@@ -240,7 +247,7 @@ void Ball::handleEvent( SDL_Event& e )
     }*/
 }
 
-void Ball::move()
+void Player::move()
 {
     //Move the dot left or right
     x += vx;
@@ -274,9 +281,19 @@ void Ball::move()
 
 }
 
-void Ball::render()
+void Player::render()
 {
     sprite.render(x,y);
+}
+
+int Player::getX()
+{
+    return x;
+}
+
+int Player::getY()
+{
+    return y;
 }
 
 //Starts up SDL and creates window
@@ -458,9 +475,9 @@ int main( int argc, char* args[] )
         //Event handler
         SDL_Event e;
 
-        //The ball that will be moving around on the screen
-        Ball ball;
-        bullet MyBullet(playerX,playerY);
+        //The Player that will be moving around on the screen
+        Player user;
+        bullet MyBullet;
         //bullet shots [3];
 
         //While application is running
@@ -475,23 +492,41 @@ int main( int argc, char* args[] )
                     quit = true;
                 }
 
-                //Handle input for the ball
-                ball.handleEvent( e );
+                //Handle input for the Player
+                //user.handleEvent( e );
+
+                if( e.type == SDL_KEYDOWN )
+                {
+                    switch( e.key.keysym.sym )
+                    {
+                    case SDLK_SPACE:
+                        MyBullet.inFlight = true;
+                        MyBullet.setxy(user.getX(),user.getY());
+                        break;
+                    }
+                }
             }
 
-            ball.check();
-
-            //Move the ball
-            ball.move();
-            MyBullet.move();
+            user.check();
 
             //Clear screen
             SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
             SDL_RenderClear( gRenderer );
 
+            //Move the Player
+            user.move();
+
             //Render objects
-            ball.render();
-            MyBullet.render();
+            user.render();
+            if (MyBullet.inFlight)
+            {
+                MyBullet.move();
+                MyBullet.render();
+                if (MyBullet.getY() < 0)
+                {
+                    MyBullet.inFlight = false;
+                }
+            }
 
             //Update screen
             SDL_RenderPresent( gRenderer );
