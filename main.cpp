@@ -513,11 +513,6 @@ int main( int argc, char* args[] )
             SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
             SDL_RenderClear( gRenderer );
 
-            //Move the Player
-            user.move();
-
-            //Render objects
-            user.render();
             if (MyBullet.inFlight)
             {
                 MyBullet.move();
@@ -527,6 +522,12 @@ int main( int argc, char* args[] )
                     MyBullet.inFlight = false;
                 }
             }
+
+            //Move the Player
+            user.move();
+
+            //Render objects
+            user.render();
 
             //Update screen
             SDL_RenderPresent( gRenderer );
