@@ -462,6 +462,8 @@ void close()
 
 int main( int argc, char* args[] )
 {
+    int totalBullets = 0;
+
     //Start up SDL and create window
     if( !init() )
     {
@@ -477,8 +479,7 @@ int main( int argc, char* args[] )
 
         //The Player that will be moving around on the screen
         Player user;
-        bullet MyBullet;
-        //bullet shots [3];
+        bullet MyBullet [20];
 
         //While application is running
         while( !quit )
@@ -500,8 +501,9 @@ int main( int argc, char* args[] )
                     switch( e.key.keysym.sym )
                     {
                     case SDLK_SPACE:
-                        MyBullet.inFlight = true;
-                        MyBullet.setxy(user.getX(),user.getY());
+                        MyBullet[totalBullets].inFlight = true;
+                        MyBullet[totalBullets].setxy(user.getX(),user.getY());
+                        totalBullets++;
                         break;
                     }
                 }
@@ -513,14 +515,17 @@ int main( int argc, char* args[] )
             SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
             SDL_RenderClear( gRenderer );
 
-            if (MyBullet.inFlight)
+            for (int f = 0; f < totalBullets; f++)
             {
-                MyBullet.move();
-                MyBullet.render();
-                if (MyBullet.getY() < 0)
+            if (MyBullet[f].inFlight)
+            {
+                MyBullet[f].move();
+                MyBullet[f].render();
+                if (MyBullet[f].getY() < 0)
                 {
-                    MyBullet.inFlight = false;
+                    MyBullet[f].inFlight = false;
                 }
+            }
             }
 
             //Move the Player
