@@ -43,6 +43,66 @@ private:
     int mHeight;
 };
 
+class Enemy
+{
+public:
+    static const int WIDTH = 32;
+    static const int HEIGHT = 32;
+
+    //Initializes the variables
+    Enemy();
+    ~Enemy();
+
+    //Moves the dot
+    void move();
+
+    //Shows the dot on the screen
+    void render();
+
+    bool inFlight = false;
+
+    void setxy(int inputx, int inputy);
+
+    int getX();
+    int getY();
+
+private:
+    //Sprite for the enemy
+    Sprite sprite;
+    //The X and Y offsets of the dot
+    int x, y;
+};
+
+Enemy::Enemy()
+{
+    //Load dot texture
+    if( !sprite.loadFromFile( "enemy.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+}
+
+Enemy::~Enemy()
+{
+    sprite.free();
+}
+
+void Enemy:: setxy(int inputx, int inputy)
+{
+    x = inputx;
+    y = inputy;
+}
+
+void Enemy::render()
+{
+    sprite.render(x,y);
+}
+
+void Enemy::move()
+{
+    y = y + 1;
+}
+
 class bullet
 {
 public:
@@ -500,6 +560,9 @@ int main( int argc, char* args[] )
         //The Player that will be moving around on the screen
         Player user;
         bullet MyBullet [20];
+        Enemy enemy1;
+
+        enemy1.setxy(10,10);
 
         //While application is running
         while( !quit )
@@ -569,6 +632,12 @@ int main( int argc, char* args[] )
 
             //Render objects
             user.render();
+
+            //Move the enemies
+            enemy1.move();
+
+            //Render enemies
+            enemy1.render();
 
             //Update screen
             SDL_RenderPresent( gRenderer );
