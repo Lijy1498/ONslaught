@@ -141,12 +141,18 @@ public:
     //Get Y
     int getY();
 
+    //Check if they can fire a bullet
+    bool noBullet = false;
+
     //Shows the dot on the screen
     void render();
 
 private:
     //Sprite for the Player
     Sprite sprite;
+    //Sprite for the Player
+    Sprite sprite2;
+
     //The X and Y offsets of the dot
     int x, y;
 
@@ -169,11 +175,17 @@ Player::Player()
     {
         printf( "Failed to load dot texture!\n" );
     }
+    //Load dot texture
+    if( !sprite2.loadFromFile( "playerNoBullet.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
 }
 
 Player::~Player()
 {
     sprite.free();
+    sprite2.free();
 }
 
 void Player::check()
@@ -283,7 +295,14 @@ void Player::move()
 
 void Player::render()
 {
+    if (noBullet)
+    {
+        sprite2.render(x,y);
+    }
+    else
+    {
     sprite.render(x,y);
+    }
 }
 
 int Player::getX()
@@ -463,6 +482,7 @@ void close()
 int main( int argc, char* args[] )
 {
     int totalBullets = 0;
+    bool once = true;
 
     //Start up SDL and create window
     if( !init() )
@@ -518,6 +538,12 @@ int main( int argc, char* args[] )
             SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
             SDL_RenderClear( gRenderer );
 
+            if (once and totalBullets == 7)
+            {
+                user.noBullet = true;
+                once = false;
+            }
+
             for (int f = 0; f < totalBullets; f++)
             {
                 if (MyBullet[f].inFlight)
@@ -530,6 +556,8 @@ int main( int argc, char* args[] )
                         if (f == 6)
                         {
                             totalBullets = 0;
+                            user.noBullet = false;
+                            once = true;
                         }
                     }
                 }
