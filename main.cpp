@@ -7,7 +7,6 @@
 //#include <SDL_image.h>
 #include <stdio.h>
 #include <string>
-#include <iostream>
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -502,27 +501,11 @@ int main( int argc, char* args[] )
                     switch( e.key.keysym.sym )
                     {
                     case SDLK_SPACE:
-                        if (totalBullets <= 19)
+                        if (totalBullets < 7)
                         {
-                            for (int f = 0; f <= totalBullets; f++)
-                            {
-                                if (!MyBullet[f].inFlight)
-                                {
-                                    MyBullet[f].inFlight = true;
-                                    MyBullet[f].setxy(user.getX(),user.getY());
-                                }
-                                else if (f == totalBullets)
-                                {
-                                    MyBullet[f].inFlight = true;
-                                    MyBullet[f].setxy(user.getX(),user.getY());
-                                    totalBullets++;
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            std::cout << "don't fire!";
+                            MyBullet[totalBullets].inFlight = true;
+                            MyBullet[totalBullets].setxy(user.getX(),user.getY());
+                            totalBullets++;
                         }
                         break;
                     }
@@ -535,19 +518,23 @@ int main( int argc, char* args[] )
             SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
             SDL_RenderClear( gRenderer );
 
-            for (int f = 0; f < totalBullets - 1; f++)
+            for (int f = 0; f < totalBullets; f++)
             {
-                if (MyBullet[f].getY() <= 0 /*or hits an enemy*/ )
-                {
-                    MyBullet[f].inFlight = false;
-                    totalBullets--;
-                }
                 if (MyBullet[f].inFlight)
                 {
                     MyBullet[f].move();
                     MyBullet[f].render();
+                    if (MyBullet[f].getY() <= -32)
+                    {
+                        MyBullet[f].inFlight = false;
+                        if (f == 6)
+                        {
+                            totalBullets = 0;
+                        }
+                    }
                 }
             }
+
 
             //Move the Player
             user.move();
