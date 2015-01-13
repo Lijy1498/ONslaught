@@ -560,9 +560,12 @@ int main( int argc, char* args[] )
         //The Player that will be moving around on the screen
         Player user;
         bullet MyBullet [20];
-        Enemy enemy1;
+        Enemy enemies [20];
 
-        enemy1.setxy(10,10);
+        for (int x = 0; x < 20; x++)
+        {
+        enemies[x].setxy(x*32,10);
+        }
 
         //While application is running
         while( !quit )
@@ -633,11 +636,14 @@ int main( int argc, char* args[] )
             //Render objects
             user.render();
 
+            for (int f = 0; f < 20; f++)
+            {
             //Move the enemies
-            enemy1.move();
+            enemies[f].move();
 
             //Render enemies
-            enemy1.render();
+            enemies[f].render();
+            }
 
             //Update screen
             SDL_RenderPresent( gRenderer );
