@@ -59,7 +59,7 @@ public:
     //Shows the dot on the screen
     void render();
 
-    bool inFlight = false;
+    bool alive = true;
 
     void setxy(int inputx, int inputy);
 
@@ -101,6 +101,16 @@ void Enemy::render()
 void Enemy::move()
 {
     y = y + 1;
+}
+
+int Enemy::getX()
+{
+    return x;
+}
+
+int Enemy::getY()
+{
+    return y;
 }
 
 class bullet
@@ -361,7 +371,7 @@ void Player::render()
     }
     else
     {
-    sprite.render(x,y);
+        sprite.render(x,y);
     }
 }
 
@@ -564,7 +574,7 @@ int main( int argc, char* args[] )
 
         for (int x = 0; x < 20; x++)
         {
-        enemies[x].setxy(x*32,10);
+            enemies[x].setxy(x*32,-40);
         }
 
         //While application is running
@@ -614,16 +624,36 @@ int main( int argc, char* args[] )
             {
                 if (MyBullet[f].inFlight)
                 {
+                    //Move bullets
                     MyBullet[f].move();
+                    //Render Bullets
                     MyBullet[f].render();
+                    //Check if bullet goes off screen
                     if (MyBullet[f].getY() <= -32)
                     {
                         MyBullet[f].inFlight = false;
+                        //If the bullet is the last bullet, reload
                         if (f == 6)
                         {
                             totalBullets = 0;
                             user.noBullet = false;
                             once = true;
+                        }
+                    }
+                    //Check if bullet hits the enemy
+                    for (int x = 0; x < 20; x++)
+                    {
+                        if (MyBullet[f].getX()>=enemies[x].getX() and MyBullet[f].getX()<=enemies[x].getX()+32 and MyBullet[f].getY()>=enemies[x].getY() and MyBullet[f].getY()<=enemies[x].getY()+32)
+                        {
+                            MyBullet[f].inFlight = false;
+                            enemies[x].alive = false;
+                            //If the bullet is the last bullet, reload
+                            if (f == 6)
+                            {
+                                totalBullets = 0;
+                                user.noBullet = false;
+                                once = true;
+                            }
                         }
                     }
                 }
@@ -638,11 +668,14 @@ int main( int argc, char* args[] )
 
             for (int f = 0; f < 20; f++)
             {
-            //Move the enemies
-            enemies[f].move();
+                if (enemies[f].alive)
+                {
+                    //Move the enemies
+                    enemies[f].move();
 
-            //Render enemies
-            enemies[f].render();
+                    //Render enemies
+                    enemies[f].render();
+                }
             }
 
             //Update screen
