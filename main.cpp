@@ -46,8 +46,8 @@ private:
 class Enemy
 {
 public:
-    static const int WIDTH = 32;
-    static const int HEIGHT = 32;
+    static const int WIDTH = 20;
+    static const int HEIGHT = 20;
 
     //Initializes the variables
     Enemy();
@@ -116,8 +116,8 @@ int Enemy::getY()
 class bullet
 {
 public:
-    static const int WIDTH = 32;
-    static const int HEIGHT = 32;
+    static const int WIDTH = 4;
+    static const int HEIGHT = 17;
 
     //Initializes the variables
     bullet();
@@ -633,31 +633,31 @@ int main( int argc, char* args[] )
                     {
                         MyBullet[f].inFlight = false;
                         MyBullet[f].setxy(-20,-20);
-                        //If the bullet is the last bullet, reload
-                        if (f == 6)
-                        {
-                            totalBullets = 0;
-                            user.noBullet = false;
-                            once = true;
-                        }
                     }
                     //Check if bullet hits the enemy
                     for (int x = 0; x < 20; x++)
                     {
-                        if (MyBullet[f].getX()>=enemies[x].getX() and MyBullet[f].getX()<=enemies[x].getX()+32 and MyBullet[f].getY()>=enemies[x].getY() and MyBullet[f].getY()<=enemies[x].getY()+32)
+                        if (MyBullet[f].getX()>=enemies[x].getX() and MyBullet[f].getX()<=enemies[x].getX()+21 and MyBullet[f].getY()>=enemies[x].getY() and MyBullet[f].getY()<=enemies[x].getY()+32)
                         {
                             MyBullet[f].inFlight = false;
                             enemies[x].alive = false;
                             enemies[x].setxy(-20,-20);
-                            //If the bullet is the last bullet, reload
-                            if (f == 6)
-                            {
-                                totalBullets = 0;
-                                user.noBullet = false;
-                                once = true;
-                            }
                         }
                     }
+                }
+            }
+
+            for (int f = 0; f < totalBullets; f++)
+            {
+                if (MyBullet[f].inFlight)
+                {
+                    break;
+                }
+                else if (f == 6)
+                {
+                    totalBullets = 0;
+                    user.noBullet = false;
+                    once = true;
                 }
             }
 
