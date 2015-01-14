@@ -7,6 +7,8 @@
 //#include <SDL_image.h>
 #include <stdio.h>
 #include <string>
+#include <cstdlib>
+#include <ctime>
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -133,6 +135,7 @@ public:
     void render();
 
     bool inFlight = false;
+    bool enemy = false;
 
     void setxy(int inputx, int inputy);
 
@@ -142,6 +145,9 @@ public:
 private:
     //Sprite for the bullet
     Sprite sprite;
+    //Sprite for the bullet
+    Sprite sprite2;
+
     //The X and Y offsets of the dot
     int x, y;
 };
@@ -150,6 +156,12 @@ bullet::bullet()
 {
     //Load dot texture
     if( !sprite.loadFromFile( "bullet.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load dot texture
+    if( !sprite2.loadFromFile( "EnemyBullet.bmp" ) )
     {
         printf( "Failed to load dot texture!\n" );
     }
@@ -162,7 +174,14 @@ bullet::~bullet()
 
 void bullet::render()
 {
-    sprite.render(x,y);
+    if (!enemy)
+    {
+        sprite.render(x,y);
+    }
+    else if (enemy)
+    {
+        sprite2.render(x,y);
+    }
 }
 
 void bullet:: setxy(int inputx, int inputy)
@@ -173,7 +192,14 @@ void bullet:: setxy(int inputx, int inputy)
 
 void bullet::move()
 {
-    y = y - 3;
+    if (!enemy)
+    {
+        y = y - 3;
+    }
+    else if (enemy)
+    {
+        y = y + 6;
+    }
 }
 
 int bullet::getX()
@@ -554,6 +580,10 @@ int main( int argc, char* args[] )
     int totalBullets = 0;
     bool once = true;
 
+    //For random bullet timing
+    int x;
+    srand(time(0));
+
     //Start up SDL and create window
     if( !init() )
     {
@@ -571,6 +601,7 @@ int main( int argc, char* args[] )
         Player user;
         bullet MyBullet [20];
         Enemy enemies [20];
+        bullet EnemyBullet [20];
 
         for (int x = 0; x < 20; x++)
         {
@@ -672,11 +703,30 @@ int main( int argc, char* args[] )
             {
                 if (enemies[f].alive)
                 {
+                    x = rand()%500;
+                    if (x <= 10 and EnemyBullet[f].inFlight == false)
+                    {
+                        EnemyBullet[f].setxy(enemies[f].getX(),enemies[f].getY());
+                        EnemyBullet[f].inFlight = true;
+                        EnemyBullet[f].enemy = true;
+                    }
                     //Move the enemies
                     enemies[f].move();
 
                     //Render enemies
                     enemies[f].render();
+
+                    if (EnemyBullet[f].getY() >= SCREEN_HEIGHT and EnemyBullet[f].inFlight)
+                    {
+                        EnemyBullet[f].inFlight = false;
+                        EnemyBullet[f].setxy(-20,-20);
+                    }
+
+                    if (EnemyBullet[f].inFlight)
+                    {
+                        EnemyBullet[f].move();
+                        EnemyBullet[f].render();
+                    }
                 }
             }
 
