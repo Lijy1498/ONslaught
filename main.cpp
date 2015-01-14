@@ -632,6 +632,7 @@ int main( int argc, char* args[] )
                     if (MyBullet[f].getY() <= -32)
                     {
                         MyBullet[f].inFlight = false;
+                        MyBullet[f].setxy(-20,-20);
                         //If the bullet is the last bullet, reload
                         if (f == 6)
                         {
@@ -647,6 +648,7 @@ int main( int argc, char* args[] )
                         {
                             MyBullet[f].inFlight = false;
                             enemies[x].alive = false;
+                            enemies[x].setxy(-20,-20);
                             //If the bullet is the last bullet, reload
                             if (f == 6)
                             {
