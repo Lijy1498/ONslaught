@@ -45,10 +45,112 @@ private:
     int mHeight;
 };
 
+class Score
+{
+    static const int WIDTH = 22;
+    static const int HEIGHT = 20;
+
+    //Initializes the variables
+    Score();
+    ~Score();
+
+    //Shows the dot on the screen
+    void render(int number);
+
+    void setxy(int inputx, int inputy);
+
+private:
+    Sprite numbers[10];
+
+    int x, y;
+};
+
+Score::Score()
+{
+    //Load end texture
+    if( !numbers[0].loadFromFile( "zero.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[1].loadFromFile( "one.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[2].loadFromFile( "two.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[3].loadFromFile( "three.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[4].loadFromFile( "four.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[5].loadFromFile( "five.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[6].loadFromFile( "six.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[7].loadFromFile( "seven.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[8].loadFromFile( "eight.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[9].loadFromFile( "nine.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+}
+
+Score::~Score()
+{
+    for (int i = 0; i < 10; i++)
+    {
+        numbers[i].free();
+    }
+}
+
+void Score::setxy(int inputx,int inputy)
+{
+    x = inputx;
+    y = inputy;
+}
+
+void Score::render(int number)
+{
+    numbers[number].render(x,y);
+}
+
 class Enemy
 {
 public:
-    static const int WIDTH = 20;
+    static const int WIDTH = 22;
     static const int HEIGHT = 20;
 
     //Initializes the variables
@@ -575,10 +677,83 @@ void close()
     SDL_Quit();
 }
 
+void gameOver()
+{
+    Sprite End;
+    Sprite numbers[10];
+
+    //Load end texture
+    if( !numbers[0].loadFromFile( "zero.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[1].loadFromFile( "one.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[2].loadFromFile( "two.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[3].loadFromFile( "three.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[4].loadFromFile( "four.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[5].loadFromFile( "five.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[6].loadFromFile( "six.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[7].loadFromFile( "seven.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[8].loadFromFile( "eight.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !numbers[9].loadFromFile( "nine.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+
+    //Load end texture
+    if( !End.loadFromFile( "gameOver.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+}
+
 int main( int argc, char* args[] )
 {
     int totalBullets = 0;
     bool once = true;
+    int score = 0;
 
     //For random bullet timing
     int x;
@@ -631,7 +806,7 @@ int main( int argc, char* args[] )
                         if (totalBullets < 7)
                         {
                             MyBullet[totalBullets].inFlight = true;
-                            MyBullet[totalBullets].setxy(user.getX(),user.getY());
+                            MyBullet[totalBullets].setxy(user.getX()+14,user.getY());
                             totalBullets++;
                         }
                         break;
@@ -668,11 +843,12 @@ int main( int argc, char* args[] )
                     //Check if bullet hits the enemy
                     for (int x = 0; x < 20; x++)
                     {
-                        if (MyBullet[f].getX()>=enemies[x].getX() and MyBullet[f].getX()<=enemies[x].getX()+21 and MyBullet[f].getY()>=enemies[x].getY() and MyBullet[f].getY()<=enemies[x].getY()+32)
+                        if (MyBullet[f].getX()>=enemies[x].getX() and MyBullet[f].getX()<=enemies[x].getX()+22 and MyBullet[f].getY()>=enemies[x].getY() and MyBullet[f].getY()<=enemies[x].getY()+20)
                         {
                             MyBullet[f].inFlight = false;
                             enemies[x].alive = false;
                             enemies[x].setxy(-20,-20);
+                            score = score + 100;
                         }
                     }
                 }
@@ -706,16 +882,10 @@ int main( int argc, char* args[] )
                     x = rand()%500;
                     if (x <= 10 and EnemyBullet[f].inFlight == false)
                     {
-                        EnemyBullet[f].setxy(enemies[f].getX(),enemies[f].getY());
+                        EnemyBullet[f].setxy(enemies[f].getX()+10,enemies[f].getY());
                         EnemyBullet[f].inFlight = true;
                         EnemyBullet[f].enemy = true;
                     }
-                    //Move the enemies
-                    enemies[f].move();
-
-                    //Render enemies
-                    enemies[f].render();
-
                     if (EnemyBullet[f].getY() >= SCREEN_HEIGHT and EnemyBullet[f].inFlight)
                     {
                         EnemyBullet[f].inFlight = false;
@@ -726,7 +896,31 @@ int main( int argc, char* args[] )
                     {
                         EnemyBullet[f].move();
                         EnemyBullet[f].render();
+
+                        if (EnemyBullet[f].getX() >= user.getX() and EnemyBullet[f].getX() <= user.getX()+32 and EnemyBullet[f].getY() >= user.getY() and EnemyBullet[f].getY() <= user.getY()+32)
+                        {
+                            //Clear screen
+                            SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+                            SDL_RenderClear( gRenderer );
+
+                            gameOver();
+
+                            quit = true;
+                            break;
+                        }
                     }
+
+                    //Move the enemies
+                    enemies[f].move();
+
+                    //Render enemies
+                    enemies[f].render();
+
+                    if (enemies[f].getY() > SCREEN_HEIGHT+25)
+                    {
+                        enemies[f].setxy(enemies[f].getX(),-30);
+                    }
+
                 }
             }
 
