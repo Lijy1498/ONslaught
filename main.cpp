@@ -468,10 +468,10 @@ void Player::move()
         vx = 0;
         x = 0;
     }
-    else if( x + sprite.getWidth() > SCREEN_WIDTH )
+    else if( x + sprite.getWidth() > SCREEN_WIDTH - SCREEN_WIDTH/4 )
     {
         vx = 0;
-        x =  SCREEN_WIDTH - sprite.getWidth();
+        x =  SCREEN_WIDTH - SCREEN_WIDTH/4  - sprite.getWidth();
     }
 
     //Move the dot up or down
@@ -754,9 +754,14 @@ int main( int argc, char* args[] )
     int totalBullets = 0;
     bool once = true;
     int score = 0;
+    int level = 1;
+    int totalEnemies = 5;
+    int cordinate, x;
+    int y = 0;
+    int counter = 2;
 
     //For random bullet timing
-    int x;
+    int random;
     srand(time(0));
 
     //Start up SDL and create window
@@ -775,12 +780,21 @@ int main( int argc, char* args[] )
         //The Player that will be moving around on the screen
         Player user;
         bullet MyBullet [20];
-        Enemy enemies [20];
+        Enemy enemies [100];
         bullet EnemyBullet [20];
 
-        for (int x = 0; x < 20; x++)
+        for (int f = 0; f < totalEnemies; f++)
         {
-            enemies[x].setxy(x*32,-40);
+            random = rand()%SCREEN_HEIGHT;
+            x++;
+            cordinate = x*32;
+            if (cordinate>=SCREEN_WIDTH - SCREEN_WIDTH/4)
+            {
+                y = SCREEN_HEIGHT * counter;
+                counter++;
+                x = 0;
+            }
+            enemies[x].setxy(cordinate,(-3*random)-y);
         }
 
         //While application is running
@@ -875,12 +889,12 @@ int main( int argc, char* args[] )
             //Render objects
             user.render();
 
-            for (int f = 0; f < 20; f++)
+            for (int f = 0; f < totalEnemies; f++)
             {
                 if (enemies[f].alive)
                 {
-                    x = rand()%500;
-                    if (x <= 10 and EnemyBullet[f].inFlight == false)
+                    random = rand()%500;
+                    if (random <= 10 and EnemyBullet[f].inFlight == false)
                     {
                         EnemyBullet[f].setxy(enemies[f].getX()+10,enemies[f].getY());
                         EnemyBullet[f].inFlight = true;
@@ -904,7 +918,6 @@ int main( int argc, char* args[] )
                             SDL_RenderClear( gRenderer );
 
                             gameOver();
-
                             quit = true;
                             break;
                         }
@@ -921,6 +934,34 @@ int main( int argc, char* args[] )
                         enemies[f].setxy(enemies[f].getX(),-30);
                     }
 
+                }
+            }
+
+            for (int f = 0; f < totalEnemies; f++)
+            {
+                if (enemies[f].alive)
+                {
+                    break;
+                }
+                else if (f == 19)
+                {
+                    level++;
+                    totalEnemies= totalEnemies + 5;
+
+                    for (int f = 0; f < totalEnemies; f++)
+                    {
+                        random = rand()%SCREEN_HEIGHT;
+                        x++;
+                        cordinate = x*32;
+                        if (cordinate>=SCREEN_WIDTH - SCREEN_WIDTH/4)
+                        {
+                        y = SCREEN_HEIGHT * counter;
+                        counter++;
+                        x = 0;
+                    }
+                    enemies[f].setxy(cordinate,(-3*random)-y);
+                    enemies[f].alive = true;
+                    }
                 }
             }
 
