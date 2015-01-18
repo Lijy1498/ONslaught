@@ -220,8 +220,8 @@ int Enemy::getY()
 class bullet
 {
 public:
-    static const int WIDTH = 4;
-    static const int HEIGHT = 17;
+    int WIDTH = 4;
+    int HEIGHT = 17;
 
     //Initializes the variables
     bullet();
@@ -266,6 +266,12 @@ bullet::bullet()
     if( !sprite2.loadFromFile( "EnemyBullet.bmp" ) )
     {
         printf( "Failed to load dot texture!\n" );
+    }
+
+    if (enemy)
+    {
+        WIDTH = 2;
+        HEIGHT = 7;
     }
 }
 
@@ -680,67 +686,6 @@ void close()
 void gameOver()
 {
     Sprite End;
-    Sprite numbers[10];
-
-    //Load end texture
-    if( !numbers[0].loadFromFile( "zero.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[1].loadFromFile( "one.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[2].loadFromFile( "two.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[3].loadFromFile( "three.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[4].loadFromFile( "four.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[5].loadFromFile( "five.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[6].loadFromFile( "six.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[7].loadFromFile( "seven.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[8].loadFromFile( "eight.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[9].loadFromFile( "nine.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
 
     //Load end texture
     if( !End.loadFromFile( "gameOver.bmp" ) )
@@ -756,9 +701,9 @@ int main( int argc, char* args[] )
     int score = 0;
     int level = 1;
     int totalEnemies = 5;
-    int cordinate, x;
-    int y = 0;
-    int counter = 2;
+    int coordinate, column;
+    int layer = 0;
+    int counter = 1;
 
     //For random bullet timing
     int random;
@@ -786,15 +731,15 @@ int main( int argc, char* args[] )
         for (int f = 0; f < totalEnemies; f++)
         {
             random = rand()%SCREEN_HEIGHT;
-            x++;
-            cordinate = x*32;
-            if (cordinate>=SCREEN_WIDTH - SCREEN_WIDTH/4)
+            column = column+1;
+            coordinate = column*32;
+            if (coordinate>=436)
             {
-                y = SCREEN_HEIGHT * counter;
+                layer = SCREEN_HEIGHT * counter;
                 counter++;
-                x = 0;
+                column = 0;
             }
-            enemies[x].setxy(cordinate,(-3*random)-y);
+            enemies[f].setxy(coordinate,(-3*random)-layer);
         }
 
         //While application is running
@@ -943,7 +888,7 @@ int main( int argc, char* args[] )
                 {
                     break;
                 }
-                else if (f == 19)
+                else if (f == totalEnemies - 1)
                 {
                     level++;
                     totalEnemies= totalEnemies + 5;
@@ -951,16 +896,17 @@ int main( int argc, char* args[] )
                     for (int f = 0; f < totalEnemies; f++)
                     {
                         random = rand()%SCREEN_HEIGHT;
-                        x++;
-                        cordinate = x*32;
-                        if (cordinate>=SCREEN_WIDTH - SCREEN_WIDTH/4)
+                        column = column+1;
+                        coordinate = column*32;
+                        if (coordinate>=436)
                         {
-                        y = SCREEN_HEIGHT * counter;
-                        counter++;
-                        x = 0;
-                    }
-                    enemies[f].setxy(cordinate,(-3*random)-y);
-                    enemies[f].alive = true;
+                            layer = SCREEN_HEIGHT * counter;
+                            counter++;
+                            column = 0;
+                        }
+                        enemies[f].setxy(coordinate,(-3*random)-layer);
+                        enemies[f].alive = true;
+                        EnemyBullet[f].inFlight = false;
                     }
                 }
             }
