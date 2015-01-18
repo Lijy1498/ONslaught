@@ -47,8 +47,9 @@ private:
 
 class Score
 {
-    static const int WIDTH = 22;
-    static const int HEIGHT = 20;
+public:
+    static const int WIDTH = 40;
+    static const int HEIGHT = 53;
 
     //Initializes the variables
     Score();
@@ -144,7 +145,48 @@ void Score::setxy(int inputx,int inputy)
 
 void Score::render(int number)
 {
-    numbers[number].render(x,y);
+    switch(number)
+    {
+        case 0:
+        numbers[0].render(x,y);
+        break;
+
+        case 1:
+        numbers[1].render(x,y);
+        break;
+
+        case 2:
+        numbers[2].render(x,y);
+        break;
+
+        case 3:
+        numbers[3].render(x,y);
+        break;
+
+        case 4:
+        numbers[4].render(x,y);
+        break;
+
+        case 5:
+        numbers[5].render(x,y);
+        break;
+
+        case 6:
+        numbers[6].render(x,y);
+        break;
+
+        case 7:
+        numbers[7].render(x,y);
+        break;
+
+        case 8:
+        numbers[8].render(x,y);
+        break;
+
+        case 9:
+        numbers[9].render(x,y);
+        break;
+    }
 }
 
 class Enemy
@@ -698,7 +740,7 @@ int main( int argc, char* args[] )
 {
     int totalBullets = 0;
     bool once = true;
-    int score = 0;
+    int score[3];
     int level = 1;
     int totalEnemies = 5;
     int coordinate, column;
@@ -727,13 +769,20 @@ int main( int argc, char* args[] )
         bullet MyBullet [20];
         Enemy enemies [100];
         bullet EnemyBullet [20];
+        Score points[3];
 
+        for (int x = 0; x < 3; x++)
+        {
+            score[x]=0;
+        }
+
+        //Spawn enemies
         for (int f = 0; f < totalEnemies; f++)
         {
             random = rand()%SCREEN_HEIGHT;
             column = column+1;
             coordinate = column*32;
-            if (coordinate>=436)
+            if (coordinate>=SCREEN_WIDTH-SCREEN_WIDTH/4-enemies[f].WIDTH)
             {
                 layer = SCREEN_HEIGHT * counter;
                 counter++;
@@ -797,17 +846,30 @@ int main( int argc, char* args[] )
                     if (MyBullet[f].getY() <= -32)
                     {
                         MyBullet[f].inFlight = false;
-                        MyBullet[f].setxy(-20,-20);
+                        MyBullet[f].setxy(-50,-50);
                     }
                     //Check if bullet hits the enemy
                     for (int x = 0; x < 20; x++)
                     {
-                        if (MyBullet[f].getX()>=enemies[x].getX() and MyBullet[f].getX()<=enemies[x].getX()+22 and MyBullet[f].getY()>=enemies[x].getY() and MyBullet[f].getY()<=enemies[x].getY()+20)
+                        if (MyBullet[f].getX()>=enemies[x].getX() and MyBullet[f].getX()<=enemies[x].getX()+22 and MyBullet[f].getY()>=enemies[x].getY() and MyBullet[f].getY()<=enemies[x].getY()+20 and MyBullet[f].inFlight)
                         {
+                            if (MyBullet[f].inFlight = true)
+                            {
+                            score[0] = score[0] + 5;
+                            while (score[0] >= 10)
+                            {
+                                score[1]++;
+                                score[0]= score[0]-10;
+                                while (score[1]>=10)
+                                {
+                                    score[2]++;
+                                    score[1] = score[1] - 10;
+                                }
+                            }
+                            }
                             MyBullet[f].inFlight = false;
                             enemies[x].alive = false;
-                            enemies[x].setxy(-20,-20);
-                            score = score + 100;
+                            enemies[x].setxy(-50,-50);
                         }
                     }
                 }
@@ -882,17 +944,22 @@ int main( int argc, char* args[] )
                 }
             }
 
+            //Check if enemies are alive
             for (int f = 0; f < totalEnemies; f++)
             {
+                //If they are leave this loop
                 if (enemies[f].alive)
                 {
                     break;
                 }
                 else if (f == totalEnemies - 1)
                 {
+                    //Increase the level
                     level++;
+                    //Add more enemies
                     totalEnemies= totalEnemies + 5;
 
+                    //Reset enemies
                     for (int f = 0; f < totalEnemies; f++)
                     {
                         random = rand()%SCREEN_HEIGHT;
@@ -909,6 +976,12 @@ int main( int argc, char* args[] )
                         EnemyBullet[f].inFlight = false;
                     }
                 }
+            }
+
+            for (int f = 0; f<3; f++)
+            {
+                points[f].setxy(SCREEN_WIDTH-60-f*50,50);
+                points[f].render(score[f]);
             }
 
             //Update screen
