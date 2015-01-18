@@ -782,11 +782,12 @@ int main( int argc, char* args[] )
             random = rand()%SCREEN_HEIGHT;
             column = column+1;
             coordinate = column*32;
-            if (coordinate>=SCREEN_WIDTH-SCREEN_WIDTH/4-enemies[f].WIDTH)
+            if (coordinate>=500)
             {
                 layer = SCREEN_HEIGHT * counter;
                 counter++;
                 column = 0;
+                coordinate = column*32;
             }
             enemies[f].setxy(coordinate,(-3*random)-layer);
         }
