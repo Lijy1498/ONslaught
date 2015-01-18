@@ -147,43 +147,43 @@ void Score::render(int number)
 {
     switch(number)
     {
-        case 0:
+    case 0:
         numbers[0].render(x,y);
         break;
 
-        case 1:
+    case 1:
         numbers[1].render(x,y);
         break;
 
-        case 2:
+    case 2:
         numbers[2].render(x,y);
         break;
 
-        case 3:
+    case 3:
         numbers[3].render(x,y);
         break;
 
-        case 4:
+    case 4:
         numbers[4].render(x,y);
         break;
 
-        case 5:
+    case 5:
         numbers[5].render(x,y);
         break;
 
-        case 6:
+    case 6:
         numbers[6].render(x,y);
         break;
 
-        case 7:
+    case 7:
         numbers[7].render(x,y);
         break;
 
-        case 8:
+    case 8:
         numbers[8].render(x,y);
         break;
 
-        case 9:
+    case 9:
         numbers[9].render(x,y);
         break;
     }
@@ -782,7 +782,7 @@ int main( int argc, char* args[] )
             random = rand()%SCREEN_HEIGHT;
             column = column+1;
             coordinate = column*32;
-            if (coordinate>=500)
+            if (coordinate>=436)
             {
                 layer = SCREEN_HEIGHT * counter;
                 counter++;
@@ -856,17 +856,17 @@ int main( int argc, char* args[] )
                         {
                             if (MyBullet[f].inFlight = true)
                             {
-                            score[0] = score[0] + 5;
-                            while (score[0] >= 10)
-                            {
-                                score[1]++;
-                                score[0]= score[0]-10;
-                                while (score[1]>=10)
+                                score[0] = score[0] + 5;
+                                while (score[0] >= 10)
                                 {
-                                    score[2]++;
-                                    score[1] = score[1] - 10;
+                                    score[1]++;
+                                    score[0]= score[0]-10;
+                                    while (score[1]>=10)
+                                    {
+                                        score[2]++;
+                                        score[1] = score[1] - 10;
+                                    }
                                 }
-                            }
                             }
                             MyBullet[f].inFlight = false;
                             enemies[x].alive = false;
