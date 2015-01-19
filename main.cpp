@@ -9,6 +9,7 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <sstream>
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -45,6 +46,14 @@ private:
     int mHeight;
 };
 
+void LoadBitmap(Sprite &s, const std::string& name) {
+    if( !s.loadFromFile( name ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
+}
+
+
 class Score
 {
 public:
@@ -60,73 +69,28 @@ public:
 
     void setxy(int inputx, int inputy);
 
+    bool number = true;
+
 private:
     Sprite numbers[10];
+    Sprite scoreboard;
 
     int x, y;
 };
 
 Score::Score()
 {
-    //Load end texture
-    if( !numbers[0].loadFromFile( "zero.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[1].loadFromFile( "one.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[2].loadFromFile( "two.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[3].loadFromFile( "three.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[4].loadFromFile( "four.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[5].loadFromFile( "five.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[6].loadFromFile( "six.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[7].loadFromFile( "seven.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[8].loadFromFile( "eight.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load end texture
-    if( !numbers[9].loadFromFile( "nine.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
+    LoadBitmap(numbers[0],"0.bmp");
+    LoadBitmap(numbers[1],"1.bmp");
+    LoadBitmap(numbers[2],"2.bmp");
+    LoadBitmap(numbers[3],"3.bmp");
+    LoadBitmap(numbers[4],"4.bmp");
+    LoadBitmap(numbers[5],"5.bmp");
+    LoadBitmap(numbers[6],"6.bmp");
+    LoadBitmap(numbers[7],"7.bmp");
+    LoadBitmap(numbers[8],"8.bmp");
+    LoadBitmap(numbers[9],"9.bmp");
+    LoadBitmap(scoreboard,"Scoreboard.bmp");
 }
 
 Score::~Score()
@@ -145,47 +109,13 @@ void Score::setxy(int inputx,int inputy)
 
 void Score::render(int number)
 {
-    switch(number)
+    if (number==false)
     {
-    case 0:
-        numbers[0].render(x,y);
-        break;
-
-    case 1:
-        numbers[1].render(x,y);
-        break;
-
-    case 2:
-        numbers[2].render(x,y);
-        break;
-
-    case 3:
-        numbers[3].render(x,y);
-        break;
-
-    case 4:
-        numbers[4].render(x,y);
-        break;
-
-    case 5:
-        numbers[5].render(x,y);
-        break;
-
-    case 6:
-        numbers[6].render(x,y);
-        break;
-
-    case 7:
-        numbers[7].render(x,y);
-        break;
-
-    case 8:
-        numbers[8].render(x,y);
-        break;
-
-    case 9:
-        numbers[9].render(x,y);
-        break;
+        scoreboard.render(480,480);
+    }
+    else
+    {
+        numbers[number].render(x,y);
     }
 }
 
@@ -221,11 +151,7 @@ private:
 
 Enemy::Enemy()
 {
-    //Load dot texture
-    if( !sprite.loadFromFile( "enemy.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
+    LoadBitmap(sprite,"enemy.bmp");
 }
 
 Enemy::~Enemy()
@@ -298,17 +224,8 @@ private:
 
 bullet::bullet()
 {
-    //Load dot texture
-    if( !sprite.loadFromFile( "bullet.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-
-    //Load dot texture
-    if( !sprite2.loadFromFile( "EnemyBullet.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
+    LoadBitmap(sprite,"bullet.bmp");
+    LoadBitmap(sprite2,"EnemyBullet.bmp");
 
     if (enemy)
     {
@@ -417,15 +334,9 @@ Player::Player()
     vy = 0;
 
     //Load dot texture
-    if( !sprite.loadFromFile( "player.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
+    LoadBitmap(sprite,"player.bmp");
     //Load dot texture
-    if( !sprite2.loadFromFile( "playerNoBullet.bmp" ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
+    LoadBitmap(sprite2,"playerNoBullet.bmp");
 }
 
 Player::~Player()
@@ -770,11 +681,13 @@ int main( int argc, char* args[] )
         Enemy enemies [100];
         bullet EnemyBullet [20];
         Score points[3];
+        Score board;
 
         for (int x = 0; x < 3; x++)
         {
             score[x]=0;
         }
+        board.number = false;
 
         //Spawn enemies
         for (int f = 0; f < totalEnemies; f++)
@@ -926,6 +839,15 @@ int main( int argc, char* args[] )
                             SDL_RenderClear( gRenderer );
 
                             gameOver();
+
+                            for (int f = 0; f<3; f++)
+                            {
+                                points[f].setxy(SCREEN_WIDTH*3/4-60-f*50,SCREEN_HEIGHT*3/4+50);
+                                points[f].render(score[f]);
+                            }
+
+
+
                             quit = true;
                             break;
                         }
@@ -978,6 +900,8 @@ int main( int argc, char* args[] )
                     }
                 }
             }
+
+            board.render(-1);
 
             for (int f = 0; f<3; f++)
             {
