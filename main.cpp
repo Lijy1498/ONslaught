@@ -57,8 +57,8 @@ void LoadBitmap(Sprite &s, const std::string& name) {
 class Score
 {
 public:
-    static const int WIDTH = 40;
-    static const int HEIGHT = 53;
+    static const int WIDTH = 160;
+    static const int HEIGHT = 480;
 
     //Initializes the variables
     Score();
@@ -69,7 +69,7 @@ public:
 
     void setxy(int inputx, int inputy);
 
-    bool number = true;
+    bool sideBoard = false;
 
 private:
     Sprite numbers[10];
@@ -90,7 +90,7 @@ Score::Score()
     LoadBitmap(numbers[7],"7.bmp");
     LoadBitmap(numbers[8],"8.bmp");
     LoadBitmap(numbers[9],"9.bmp");
-    LoadBitmap(scoreboard,"Scoreboard.bmp");
+    LoadBitmap(scoreboard,"scoreboard.bmp");
 }
 
 Score::~Score()
@@ -109,9 +109,9 @@ void Score::setxy(int inputx,int inputy)
 
 void Score::render(int number)
 {
-    if (number==false)
+    if (sideBoard)
     {
-        scoreboard.render(480,480);
+        scoreboard.render(SCREEN_WIDTH*3/4,SCREEN_HEIGHT);
     }
     else
     {
@@ -226,12 +226,6 @@ bullet::bullet()
 {
     LoadBitmap(sprite,"bullet.bmp");
     LoadBitmap(sprite2,"EnemyBullet.bmp");
-
-    if (enemy)
-    {
-        WIDTH = 2;
-        HEIGHT = 7;
-    }
 }
 
 bullet::~bullet()
@@ -680,14 +674,12 @@ int main( int argc, char* args[] )
         bullet MyBullet [20];
         Enemy enemies [100];
         bullet EnemyBullet [20];
-        Score points[3];
-        Score board;
+        Score points[5];
 
         for (int x = 0; x < 3; x++)
         {
             score[x]=0;
         }
-        board.number = false;
 
         //Spawn enemies
         for (int f = 0; f < totalEnemies; f++)
@@ -767,7 +759,7 @@ int main( int argc, char* args[] )
                     {
                         if (MyBullet[f].getX()>=enemies[x].getX() and MyBullet[f].getX()<=enemies[x].getX()+22 and MyBullet[f].getY()>=enemies[x].getY() and MyBullet[f].getY()<=enemies[x].getY()+20 and MyBullet[f].inFlight)
                         {
-                            if (MyBullet[f].inFlight = true)
+                            if (MyBullet[f].inFlight)
                             {
                                 score[0] = score[0] + 5;
                                 while (score[0] >= 10)
@@ -840,7 +832,7 @@ int main( int argc, char* args[] )
 
                             gameOver();
 
-                            for (int f = 0; f<3; f++)
+                            for (int f = 2; f<4; f++)
                             {
                                 points[f].setxy(SCREEN_WIDTH*3/4-60-f*50,SCREEN_HEIGHT*3/4+50);
                                 points[f].render(score[f]);
@@ -901,12 +893,23 @@ int main( int argc, char* args[] )
                 }
             }
 
-            board.render(-1);
-
-            for (int f = 0; f<3; f++)
+            for (int f = 0; f<4; f++)
             {
-                points[f].setxy(SCREEN_WIDTH-60-f*50,50);
-                points[f].render(score[f]);
+                if (f == 0)
+                {
+                    points[f].sideBoard = true;
+                    points[f].render(10);
+                }
+                else if (f == 4)
+                {
+                    points[f].setxy(SCREEN_WIDTH*3/4+50,SCREEN_HEIGHT);
+                    points[f].render(level);
+                }
+                else
+                {
+                    points[f].setxy(SCREEN_WIDTH-60-f*50,50);
+                    points[f].render(score[f-2]);
+                }
             }
 
             //Update screen
