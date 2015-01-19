@@ -69,11 +69,8 @@ public:
 
     void setxy(int inputx, int inputy);
 
-    bool sideBoard = false;
-
 private:
     Sprite numbers[10];
-    Sprite scoreboard;
 
     int x, y;
 };
@@ -90,7 +87,6 @@ Score::Score()
     LoadBitmap(numbers[7],"7.bmp");
     LoadBitmap(numbers[8],"8.bmp");
     LoadBitmap(numbers[9],"9.bmp");
-    LoadBitmap(scoreboard,"scoreboard.bmp");
 }
 
 Score::~Score()
@@ -109,14 +105,43 @@ void Score::setxy(int inputx,int inputy)
 
 void Score::render(int number)
 {
-    if (sideBoard)
-    {
-        scoreboard.render(SCREEN_WIDTH*3/4,SCREEN_HEIGHT);
-    }
-    else
-    {
         numbers[number].render(x,y);
-    }
+}
+
+class ScoreBoard
+{
+public:
+    int WIDTH = 4;
+    int HEIGHT = 17;
+
+    //Initializes the variables
+    ScoreBoard();
+    ~ScoreBoard();
+
+    //Shows the dot on the screen
+    void render();
+
+private:
+    //Sprite for the ScoreBoard
+    Sprite sprite;
+
+    //The X and Y offsets of the dot
+    int x, y;
+};
+
+ScoreBoard::ScoreBoard()
+{
+    LoadBitmap(sprite,"scoreboard.bmp");
+}
+
+ScoreBoard::~ScoreBoard()
+{
+    sprite.free();
+}
+
+void ScoreBoard::render()
+{
+        sprite.render(480,480);
 }
 
 class Enemy
@@ -676,6 +701,7 @@ int main( int argc, char* args[] )
         bullet EnemyBullet [20];
         Score points[5];
 
+
         for (int x = 0; x < 3; x++)
         {
             score[x]=0;
@@ -893,14 +919,9 @@ int main( int argc, char* args[] )
                 }
             }
 
-            for (int f = 0; f<4; f++)
+            for (int f = 0; f<3; f++)
             {
-                if (f == 0)
-                {
-                    points[f].sideBoard = true;
-                    points[f].render(10);
-                }
-                else if (f == 4)
+                if (f == 3)
                 {
                     points[f].setxy(SCREEN_WIDTH*3/4+50,SCREEN_HEIGHT);
                     points[f].render(level);
@@ -908,7 +929,7 @@ int main( int argc, char* args[] )
                 else
                 {
                     points[f].setxy(SCREEN_WIDTH-60-f*50,50);
-                    points[f].render(score[f-2]);
+                    points[f].render(score[f]);
                 }
             }
 
