@@ -9,7 +9,7 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
-#include <sstream>
+#include <iostream>
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -111,8 +111,8 @@ void Score::render(int number)
 class ScoreBoard
 {
 public:
-    int WIDTH = 4;
-    int HEIGHT = 17;
+    int WIDTH = 160;
+    int HEIGHT = 480;
 
     //Initializes the variables
     ScoreBoard();
@@ -131,7 +131,9 @@ private:
 
 ScoreBoard::ScoreBoard()
 {
-    LoadBitmap(sprite,"scoreboard.bmp");
+    LoadBitmap(sprite,"Scoreboard.bmp");
+    x=480;
+    y=480;
 }
 
 ScoreBoard::~ScoreBoard()
@@ -141,7 +143,7 @@ ScoreBoard::~ScoreBoard()
 
 void ScoreBoard::render()
 {
-        sprite.render(480,480);
+        sprite.render(x,y);
 }
 
 class Enemy
@@ -700,6 +702,7 @@ int main( int argc, char* args[] )
         Enemy enemies [100];
         bullet EnemyBullet [20];
         Score points[5];
+        ScoreBoard board;
 
 
         for (int x = 0; x < 3; x++)
@@ -858,13 +861,11 @@ int main( int argc, char* args[] )
 
                             gameOver();
 
-                            for (int f = 2; f<4; f++)
+                            for (int f = 0; f<3; f++)
                             {
                                 points[f].setxy(SCREEN_WIDTH*3/4-60-f*50,SCREEN_HEIGHT*3/4+50);
                                 points[f].render(score[f]);
                             }
-
-
 
                             quit = true;
                             break;
@@ -919,18 +920,20 @@ int main( int argc, char* args[] )
                 }
             }
 
+            board.render();
+
             for (int f = 0; f<3; f++)
             {
-                if (f == 3)
-                {
-                    points[f].setxy(SCREEN_WIDTH*3/4+50,SCREEN_HEIGHT);
-                    points[f].render(level);
-                }
-                else
-                {
+               // if (f == 3)
+               // {
+                //    points[f].setxy(SCREEN_WIDTH*3/4+50,SCREEN_HEIGHT);
+                //    points[f].render(level);
+                //}
+               // else
+               // {
                     points[f].setxy(SCREEN_WIDTH-60-f*50,50);
                     points[f].render(score[f]);
-                }
+               // }
             }
 
             //Update screen
