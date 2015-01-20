@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <conio.h>
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -46,7 +47,8 @@ private:
     int mHeight;
 };
 
-void LoadBitmap(Sprite &s, const std::string& name) {
+void LoadBitmap(Sprite &s, const std::string& name)
+{
     if( !s.loadFromFile( name ) )
     {
         printf( "Failed to load dot texture!\n" );
@@ -105,7 +107,7 @@ void Score::setxy(int inputx,int inputy)
 
 void Score::render(int number)
 {
-        numbers[number].render(x,y);
+    numbers[number].render(x,y);
 }
 
 class ScoreBoard
@@ -146,6 +148,38 @@ void ScoreBoard::render()
     sprite.render(x,y);
 }
 
+class Menus
+{
+public:
+    static const int WIDTH = 160;
+    static const int HEIGHT = 480;
+
+    //Initializes the variables
+    Menus();
+    ~Menus();
+
+    //Shows the dot on the screen
+    void render();
+
+private:
+    //Sprite for the Menus
+    Sprite sprite;
+};
+
+Menus::Menus()
+{
+    LoadBitmap(sprite,"gameOver.bmp");
+}
+
+Menus::~Menus()
+{
+    sprite.free();
+}
+
+void Menus::render()
+{
+    sprite.render(0,0);
+}
 
 class Life
 {
@@ -702,14 +736,21 @@ void close()
     SDL_Quit();
 }
 
-void gameOver()
+int gameOver()
 {
-    Sprite End;
+    const Uint8 *state = SDL_GetKeyboardState(NULL);
 
-    //Load end texture
-    if( !End.loadFromFile( "gameOver.bmp" ) )
+    if (state[SDL_SCANCODE_SPACE])
     {
-        printf( "Failed to load dot texture!\n" );
+        return 1;
+    }
+    else if (state[SDL_SCANCODE_ESCAPE])
+    {
+        return 0;
+    }
+    else
+    {
+        return 3;
     }
 }
 
@@ -753,6 +794,7 @@ int main( int argc, char* args[] )
         Score points[5];
         ScoreBoard board;
         Life hearts[3];
+        Menus endGame;
 
         for (int x = 0; x < 3; x++)
         {
@@ -774,8 +816,8 @@ int main( int argc, char* args[] )
             }
             enemies[f].setxy(coordinate,(-3*random)-layer);
         }
-                counter = 0;
-                column = 0;
+        counter = 0;
+        column = 0;
 
         //While application is running
         while( !quit )
@@ -911,20 +953,26 @@ int main( int argc, char* args[] )
 
                             if (lives == 0)
                             {
-                            //Clear screen
-                            SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
-                            SDL_RenderClear( gRenderer );
+                                //Clear screen
+                                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+                                SDL_RenderClear( gRenderer );
 
-                            gameOver();
+                                endGame.render();
 
-                            for (int f = 0; f<3; f++)
-                            {
-                                points[f].setxy(SCREEN_WIDTH*3/4-60-f*50,SCREEN_HEIGHT*3/4+50);
-                                points[f].render(score[f]);
-                            }
+                                for (int f = 0; f<3; f++)
+                                {
+                                    points[f].setxy(SCREEN_WIDTH*3/4-60-f*50,SCREEN_HEIGHT*3/4+50);
+                                    points[f].render(score[f]);
+                                }
+                                if (gameOver())
+                                {
+                                    quit = true;
+                                    break;
+                                }
+                                else
+                                {
 
-                            quit = true;
-                            break;
+                                }
                             }
                         }
                     }
@@ -946,16 +994,25 @@ int main( int argc, char* args[] )
                             SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
                             SDL_RenderClear( gRenderer );
 
-                            gameOver();
+                            endGame.render();
 
                             for (int f = 0; f<3; f++)
                             {
                                 points[f].setxy(SCREEN_WIDTH*3/4-60-f*50,SCREEN_HEIGHT*3/4+50);
                                 points[f].render(score[f]);
                             }
-
-                            quit = true;
-                            break;
+                            while (1==1)
+                            {
+                                if (gameOver() == 0)
+                                {
+                                    quit = true;
+                                    break;
+                                }
+                                else if (gameOver() == 1)
+                                {
+                                    //Reset game
+                                }
+                            }
                         }
                     }
                     if (enemies[f].getY() > SCREEN_HEIGHT+25)
@@ -1008,8 +1065,8 @@ int main( int argc, char* args[] )
 
             for (int f = 0; f < lives; f++)
             {
-                    hearts[f].setxy(SCREEN_WIDTH-50-f*50,187);
-                    hearts[f].render();
+                hearts[f].setxy(SCREEN_WIDTH-50-f*50,187);
+                hearts[f].render();
             }
 
             for (int f = 0; f<5; f++)
