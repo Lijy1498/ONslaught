@@ -1016,7 +1016,7 @@ int main( int argc, char* args[] )
             {
                 if (f >= 3)
                 {
-                    points[f].setxy(555-(50*(f-3)),299);
+                    points[f].setxy(575-(50*(f-3)),299);
                     points[f].render(level[f-3]);
                 }
                 else
@@ -1024,6 +1024,12 @@ int main( int argc, char* args[] )
                     points[f].setxy(SCREEN_WIDTH-50-f*50,50);
                     points[f].render(score[f]);
                 }
+            }
+
+            for (int f = 7; f > totalBullets; f--)
+            {
+                MyBullet[f+7].setxy(SCREEN_WIDTH-(20*(f)),439);
+                MyBullet[f+7].render();
             }
 
             //Update screen
