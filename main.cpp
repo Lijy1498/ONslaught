@@ -718,12 +718,15 @@ int main( int argc, char* args[] )
     int totalBullets = 0;
     bool once = true;
     int score[3];
-    int level = 1;
+    int level[2];
     int totalEnemies = 5;
     int coordinate, column;
     int layer = 0;
     int counter = 1;
     int lives = 3;
+
+    level [0]=1;
+    level [1]=0;
 
     //For random bullet timing
     int random;
@@ -973,8 +976,12 @@ int main( int argc, char* args[] )
                 }
                 else if (f == totalEnemies - 1)
                 {
-                    //Increase the level
-                    level++;
+                    level[0] = level[0] + 1;
+                    while (level[0] >= 10)
+                    {
+                        level[1]++;
+                        level[0]= level[0]-10;
+                    }
                     //Add more enemies
                     totalEnemies= totalEnemies + 5;
 
@@ -1001,16 +1008,16 @@ int main( int argc, char* args[] )
 
             for (int f = 0; f < lives; f++)
             {
-                    hearts[f].setxy(SCREEN_WIDTH-50-f*50,222);
+                    hearts[f].setxy(SCREEN_WIDTH-50-f*50,187);
                     hearts[f].render();
             }
 
-            for (int f = 0; f<4; f++)
+            for (int f = 0; f<5; f++)
             {
-                if (f == 3)
+                if (f >= 3)
                 {
-                    points[f].setxy(SCREEN_WIDTH*3/4+70,SCREEN_HEIGHT-80);
-                    points[f].render(level);
+                    points[f].setxy(555-(50*(f-3)),299);
+                    points[f].render(level[f-3]);
                 }
                 else
                 {
