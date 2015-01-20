@@ -57,8 +57,8 @@ void LoadBitmap(Sprite &s, const std::string& name) {
 class Score
 {
 public:
-    static const int WIDTH = 160;
-    static const int HEIGHT = 480;
+    static const int WIDTH = 40;
+    static const int HEIGHT = 53;
 
     //Initializes the variables
     Score();
@@ -111,8 +111,8 @@ void Score::render(int number)
 class ScoreBoard
 {
 public:
-    int WIDTH = 160;
-    int HEIGHT = 480;
+    static const int WIDTH = 160;
+    static const int HEIGHT = 480;
 
     //Initializes the variables
     ScoreBoard();
@@ -133,7 +133,7 @@ ScoreBoard::ScoreBoard()
 {
     LoadBitmap(sprite,"Scoreboard.bmp");
     x=480;
-    y=480;
+    y=0;
 }
 
 ScoreBoard::~ScoreBoard()
@@ -143,7 +143,52 @@ ScoreBoard::~ScoreBoard()
 
 void ScoreBoard::render()
 {
-        sprite.render(x,y);
+    sprite.render(x,y);
+}
+
+
+class Life
+{
+public:
+    static const int WIDTH = 40;
+    static const int HEIGHT = 45;
+
+    //Initializes the variables
+    Life();
+    ~Life();
+
+    //Shows the dot on the screen
+    void render();
+
+    void setxy(int inputx, int inputy);
+
+private:
+    //Sprite for the Life
+    Sprite sprite;
+
+    //The X and Y offsets of the dot
+    int x, y;
+};
+
+Life::Life()
+{
+    LoadBitmap(sprite,"heart.bmp");
+}
+
+Life::~Life()
+{
+    sprite.free();
+}
+
+void Life::render()
+{
+    sprite.render(x,y);
+}
+
+void Life::setxy(int inputx,int inputy)
+{
+    x = inputx;
+    y = inputy;
 }
 
 class Enemy
@@ -678,6 +723,7 @@ int main( int argc, char* args[] )
     int coordinate, column;
     int layer = 0;
     int counter = 1;
+    int lives = 3;
 
     //For random bullet timing
     int random;
@@ -699,11 +745,11 @@ int main( int argc, char* args[] )
         //The Player that will be moving around on the screen
         Player user;
         bullet MyBullet [20];
-        Enemy enemies [100];
-        bullet EnemyBullet [20];
+        Enemy enemies [95];
+        bullet EnemyBullet [95];
         Score points[5];
         ScoreBoard board;
-
+        Life hearts[3];
 
         for (int x = 0; x < 3; x++)
         {
@@ -725,6 +771,8 @@ int main( int argc, char* args[] )
             }
             enemies[f].setxy(coordinate,(-3*random)-layer);
         }
+                counter = 0;
+                column = 0;
 
         //While application is running
         while( !quit )
@@ -784,13 +832,13 @@ int main( int argc, char* args[] )
                         MyBullet[f].setxy(-50,-50);
                     }
                     //Check if bullet hits the enemy
-                    for (int x = 0; x < 20; x++)
+                    for (int x = 0; x < totalEnemies; x++)
                     {
                         if (MyBullet[f].getX()>=enemies[x].getX() and MyBullet[f].getX()<=enemies[x].getX()+22 and MyBullet[f].getY()>=enemies[x].getY() and MyBullet[f].getY()<=enemies[x].getY()+20 and MyBullet[f].inFlight)
                         {
                             if (MyBullet[f].inFlight)
                             {
-                                score[0] = score[0] + 5;
+                                score[0] = score[0] + 1;
                                 while (score[0] >= 10)
                                 {
                                     score[1]++;
@@ -855,6 +903,42 @@ int main( int argc, char* args[] )
 
                         if (EnemyBullet[f].getX() >= user.getX() and EnemyBullet[f].getX() <= user.getX()+32 and EnemyBullet[f].getY() >= user.getY() and EnemyBullet[f].getY() <= user.getY()+32)
                         {
+                            lives= lives - 1;
+                            EnemyBullet[f].setxy(10000,10000);
+
+                            if (lives == 0)
+                            {
+                            //Clear screen
+                            SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+                            SDL_RenderClear( gRenderer );
+
+                            gameOver();
+
+                            for (int f = 0; f<3; f++)
+                            {
+                                points[f].setxy(SCREEN_WIDTH*3/4-60-f*50,SCREEN_HEIGHT*3/4+50);
+                                points[f].render(score[f]);
+                            }
+
+                            quit = true;
+                            break;
+                            }
+                        }
+                    }
+
+                    //Move the enemies
+                    enemies[f].move();
+
+                    //Render enemies
+                    enemies[f].render();
+
+                    if (enemies[f].getX() >= user.getX() and enemies[f].getX() <= user.getX()+32 and enemies[f].getY() >= user.getY() and enemies[f].getY() <= user.getY()+32 and enemies[f].getX()+22 >= user.getX() and enemies[f].getX()+22 <= user.getX()+32 and enemies[f].getY()+20 >= user.getY() and enemies[f].getY()+20 <= user.getY()+32)
+                    {
+                        lives = lives - 1;
+                        enemies[f].alive = false;
+                        enemies[f].setxy(-50,-50);
+                        if (lives == 0)
+                        {
                             //Clear screen
                             SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
                             SDL_RenderClear( gRenderer );
@@ -871,13 +955,6 @@ int main( int argc, char* args[] )
                             break;
                         }
                     }
-
-                    //Move the enemies
-                    enemies[f].move();
-
-                    //Render enemies
-                    enemies[f].render();
-
                     if (enemies[f].getY() > SCREEN_HEIGHT+25)
                     {
                         enemies[f].setxy(enemies[f].getX(),-30);
@@ -922,18 +999,24 @@ int main( int argc, char* args[] )
 
             board.render();
 
-            for (int f = 0; f<3; f++)
+            for (int f = 0; f < lives; f++)
             {
-               // if (f == 3)
-               // {
-                //    points[f].setxy(SCREEN_WIDTH*3/4+50,SCREEN_HEIGHT);
-                //    points[f].render(level);
-                //}
-               // else
-               // {
-                    points[f].setxy(SCREEN_WIDTH-60-f*50,50);
+                    hearts[f].setxy(SCREEN_WIDTH-50-f*50,222);
+                    hearts[f].render();
+            }
+
+            for (int f = 0; f<4; f++)
+            {
+                if (f == 3)
+                {
+                    points[f].setxy(SCREEN_WIDTH*3/4+70,SCREEN_HEIGHT-80);
+                    points[f].render(level);
+                }
+                else
+                {
+                    points[f].setxy(SCREEN_WIDTH-50-f*50,50);
                     points[f].render(score[f]);
-               // }
+                }
             }
 
             //Update screen
