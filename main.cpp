@@ -10,7 +10,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include <conio.h>
+#include <windows.h>
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -572,7 +572,7 @@ int Player::getY()
     return y;
 }
 
-//Starts up SDL and creates window
+/*//Starts up SDL and creates window
 bool init();
 
 //Loads media
@@ -580,7 +580,7 @@ bool loadMedia();
 
 //Frees media and shuts down SDL
 void close();
-
+*/
 //The window we'll be rendering to
 SDL_Window* gWindow = NULL;
 
@@ -734,24 +734,6 @@ void close()
 
     //Quit SDL subsystems
     SDL_Quit();
-}
-
-int gameOver()
-{
-    const Uint8 *state = SDL_GetKeyboardState(NULL);
-
-    if (state[SDL_SCANCODE_SPACE])
-    {
-        return 1;
-    }
-    else if (state[SDL_SCANCODE_ESCAPE])
-    {
-        return 0;
-    }
-    else
-    {
-        return 3;
-    }
 }
 
 int main( int argc, char* args[] )
@@ -964,15 +946,12 @@ int main( int argc, char* args[] )
                                     points[f].setxy(SCREEN_WIDTH*3/4-60-f*50,SCREEN_HEIGHT*3/4+50);
                                     points[f].render(score[f]);
                                 }
-                                if (gameOver())
-                                {
-                                    quit = true;
-                                    break;
-                                }
-                                else
-                                {
+                                //Update screen
+                                SDL_RenderPresent( gRenderer );
 
-                                }
+                                Sleep(1000);
+                                quit = true;
+                                break;
                             }
                         }
                     }
@@ -1001,18 +980,12 @@ int main( int argc, char* args[] )
                                 points[f].setxy(SCREEN_WIDTH*3/4-60-f*50,SCREEN_HEIGHT*3/4+50);
                                 points[f].render(score[f]);
                             }
-                            while (1==1)
-                            {
-                                if (gameOver() == 0)
-                                {
-                                    quit = true;
-                                    break;
-                                }
-                                else if (gameOver() == 1)
-                                {
-                                    //Reset game
-                                }
-                            }
+                            //Update screen
+                            SDL_RenderPresent( gRenderer );
+
+                            Sleep(10000);
+                            quit = true;
+                            break;
                         }
                     }
                     if (enemies[f].getY() > SCREEN_HEIGHT+25)
