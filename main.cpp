@@ -422,6 +422,8 @@ public:
     //Checks input
     void check();
 
+    void setxy(int inputx, int inputy);
+
     //Get X
     int getX();
 
@@ -584,6 +586,12 @@ void Player::render()
     {
         sprite.render(x,y);
     }
+}
+
+void Player::setxy(int inputx, int inputy)
+{
+    x = inputx;
+    y = inputy;
 }
 
 int Player::getX()
@@ -773,6 +781,7 @@ int main( int argc, char* args[] )
     int lives = 3;
     int menu = 2;
     bool openMenu = true;
+    bool restarted = false;
 
     level [0]=1;
     level [1]=0;
@@ -803,29 +812,6 @@ int main( int argc, char* args[] )
         ScoreBoard board;
         Life hearts[3];
         Menus endGame;
-
-        for (int x = 0; x < 3; x++)
-        {
-            score[x]=0;
-        }
-
-        //Spawn enemies
-        for (int f = 0; f < totalEnemies; f++)
-        {
-            random = rand()%SCREEN_HEIGHT;
-            column = column+1;
-            coordinate = column*32;
-            if (coordinate>=436)
-            {
-                layer = SCREEN_HEIGHT * counter;
-                counter++;
-                column = 0;
-                coordinate = column*32;
-            }
-            enemies[f].setxy(coordinate,(-3*random)-layer);
-        }
-        counter = 0;
-        column = 0;
 
         while (openMenu)
         {
@@ -878,6 +864,33 @@ int main( int argc, char* args[] )
             //Update screen
             SDL_RenderPresent( gRenderer );
         }
+
+        openMenu = true;
+
+
+        for (int x = 0; x < 3; x++)
+        {
+            score[x]=0;
+        }
+
+        //Spawn enemies
+        for (int f = 0; f < totalEnemies; f++)
+        {
+            random = rand()%SCREEN_HEIGHT;
+            column = column+1;
+            coordinate = column*32;
+            if (coordinate>=436)
+            {
+                layer = SCREEN_HEIGHT * counter;
+                counter++;
+                column = 0;
+                coordinate = column*32;
+            }
+            enemies[f].setxy(coordinate,(-3*random)-layer);
+        }
+        counter = 0;
+        column = 0;
+
 
         //While application is running
         while( !quit )
@@ -1021,15 +1034,60 @@ int main( int argc, char* args[] )
 
                                 for (int f = 0; f<3; f++)
                                 {
-                                    points[f].setxy(SCREEN_WIDTH*3/4-60-f*50,SCREEN_HEIGHT*3/4+50);
+                                    points[f].setxy(515-f*50,325);
                                     points[f].render(score[f]);
                                 }
                                 //Update screen
                                 SDL_RenderPresent( gRenderer );
+                                while (openMenu)
+                                {
+                                    //Handle events on queue
+                                    while( SDL_PollEvent( &e ) != 0 )
+                                    {
+                                        if( e.type == SDL_KEYDOWN )
+                                        {
+                                            switch( e.key.keysym.sym )
+                                            {
+                                            case SDLK_ESCAPE:
+                                                quit = true;
+                                                openMenu = false;
+                                                break;
 
-                                Sleep(10000);
-                                quit = true;
-                                break;
+                                            case SDLK_SPACE:
+                                                totalBullets = 0;
+                                                once = true;
+                                                totalEnemies = 5;
+                                                layer = 0;
+                                                counter = 1;
+                                                lives = 3;
+                                                menu = 2;
+                                                level [0]=0;
+                                                level [1]=0;
+                                                restarted = true;
+                                                user.setxy(SCREEN_WIDTH/4,SCREEN_HEIGHT - 35);
+                                                user.noBullet = false;
+                                                for (int g = 0; g < 7; g++)
+                                                {
+                                                    MyBullet[g].inFlight = false;
+                                                    MyBullet[g].setxy(-20,-70);
+                                                }
+                                                for (int g = 0; g < totalEnemies; g++)
+                                                {
+                                                    enemies[g].alive = false;
+                                                    enemies[g].setxy(-20,-20);
+                                                }
+                                                for (int x = 0; x < 3; x++)
+                                                {
+                                                    score[x]=0;
+                                                }
+
+                                                openMenu = false;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                openMenu = true;
                             }
                         }
                     }
@@ -1046,31 +1104,75 @@ int main( int argc, char* args[] )
                         enemies[f].alive = false;
                         enemies[f].setxy(-50,-50);
                         if (lives == 0)
-                        {
-                            //Clear screen
-                            SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
-                            SDL_RenderClear( gRenderer );
-
-                            endGame.render(0);
-
-                            for (int f = 0; f<3; f++)
                             {
-                                points[f].setxy(SCREEN_WIDTH*3/4-60-f*50,SCREEN_HEIGHT*3/4+50);
-                                points[f].render(score[f]);
-                            }
-                            //Update screen
-                            SDL_RenderPresent( gRenderer );
+                                //Clear screen
+                                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+                                SDL_RenderClear( gRenderer );
 
-                            Sleep(10000);
-                            quit = true;
-                            break;
-                        }
+                                endGame.render(0);
+
+                                for (int f = 0; f<3; f++)
+                                {
+                                    points[f].setxy(515-f*50,325);
+                                    points[f].render(score[f]);
+                                }
+                                //Update screen
+                                SDL_RenderPresent( gRenderer );
+                                while (openMenu)
+                                {
+                                    //Handle events on queue
+                                    while( SDL_PollEvent( &e ) != 0 )
+                                    {
+                                        if( e.type == SDL_KEYDOWN )
+                                        {
+                                            switch( e.key.keysym.sym )
+                                            {
+                                            case SDLK_ESCAPE:
+                                                quit = true;
+                                                openMenu = false;
+                                                break;
+
+                                            case SDLK_SPACE:
+                                                totalBullets = 0;
+                                                once = true;
+                                                totalEnemies = 5;
+                                                layer = 0;
+                                                counter = 1;
+                                                lives = 3;
+                                                menu = 2;
+                                                level [0]=0;
+                                                level [1]=0;
+                                                restarted = true;
+                                                user.setxy(SCREEN_WIDTH/4,SCREEN_HEIGHT - 35);
+                                                user.noBullet = false;
+                                                for (int g = 0; g < 7; g++)
+                                                {
+                                                    MyBullet[g].inFlight = false;
+                                                    MyBullet[g].setxy(-20,-70);
+                                                }
+                                                for (int g = 0; g < totalEnemies; g++)
+                                                {
+                                                    enemies[g].alive = false;
+                                                    enemies[g].setxy(-20,-20);
+                                                }
+                                                for (int x = 0; x < 3; x++)
+                                                {
+                                                    score[x]=0;
+                                                }
+
+                                                openMenu = false;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                openMenu = true;
+                            }
                     }
                     if (enemies[f].getY() > SCREEN_HEIGHT+25)
                     {
                         enemies[f].setxy(enemies[f].getX(),-30);
                     }
-
                 }
             }
 
@@ -1105,8 +1207,15 @@ int main( int argc, char* args[] )
                         quit = true;
                         break;
                     }
-                    //Add more enemies
-                    totalEnemies= totalEnemies + 5;
+                    if (!restarted)
+                    {
+                        //Add more enemies
+                        totalEnemies= totalEnemies + 5;
+                    }
+                    else
+                    {
+                        restarted = false;
+                    }
 
                     //Reset enemies
                     for (int f = 0; f < totalEnemies; f++)
