@@ -159,26 +159,50 @@ public:
     ~Menus();
 
     //Shows the dot on the screen
-    void render();
+    void render(int menu);
 
 private:
     //Sprite for the Menus
-    Sprite sprite;
+    Sprite gameOver;
+    Sprite victory;
+    Sprite menuStart;
+    Sprite menuQuit;
 };
 
 Menus::Menus()
 {
-    LoadBitmap(sprite,"gameOver.bmp");
+    LoadBitmap(gameOver,"gameOver.bmp");
+    LoadBitmap(victory,"win.bmp");
+    LoadBitmap(menuStart,"menuStart.bmp");
+    LoadBitmap(menuQuit,"menuQuit.bmp");
 }
 
 Menus::~Menus()
 {
-    sprite.free();
+    gameOver.free();
+    victory.free();
+    menuStart.free();
+    menuQuit.free();
 }
 
-void Menus::render()
+void Menus::render(int menu)
 {
-    sprite.render(0,0);
+    if (menu == 0)
+    {
+        gameOver.render(0,0);
+    }
+    else if (menu == 1)
+    {
+        victory.render(0,0);
+    }
+    else if (menu == 2)
+    {
+        menuStart.render(0,0);
+    }
+    else if (menu == 3)
+    {
+        menuQuit.render(0,0);
+    }
 }
 
 class Life
@@ -747,6 +771,8 @@ int main( int argc, char* args[] )
     int layer = 0;
     int counter = 1;
     int lives = 3;
+    int menu = 2;
+    bool openMenu = true;
 
     level [0]=1;
     level [1]=0;
@@ -800,6 +826,58 @@ int main( int argc, char* args[] )
         }
         counter = 0;
         column = 0;
+
+        while (openMenu)
+        {
+            //Handle events on queue
+            while( SDL_PollEvent( &e ) != 0 )
+            {
+                if( e.type == SDL_KEYDOWN )
+                {
+                    switch( e.key.keysym.sym )
+                    {
+                    case SDLK_DOWN:
+                        if (menu == 3)
+                        {
+                            menu = 2;
+                        }
+                        else
+                        {
+                            menu = 3;
+                        }
+                        break;
+
+                    case SDLK_UP:
+                        if (menu == 3)
+                        {
+                            menu = 2;
+                        }
+                        else
+                        {
+                            menu = 3;
+                        }
+                        break;
+
+                    case SDLK_SPACE:
+                        if (menu == 3)
+                        {
+                            quit = true;
+                        }
+                        openMenu = false;
+                        break;
+                    }
+                }
+            }
+            //Clear screen
+            SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+            SDL_RenderClear( gRenderer );
+
+            endGame.render(menu);
+
+
+            //Update screen
+            SDL_RenderPresent( gRenderer );
+        }
 
         //While application is running
         while( !quit )
@@ -939,7 +1017,7 @@ int main( int argc, char* args[] )
                                 SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
                                 SDL_RenderClear( gRenderer );
 
-                                endGame.render();
+                                endGame.render(0);
 
                                 for (int f = 0; f<3; f++)
                                 {
@@ -949,7 +1027,7 @@ int main( int argc, char* args[] )
                                 //Update screen
                                 SDL_RenderPresent( gRenderer );
 
-                                Sleep(1000);
+                                Sleep(10000);
                                 quit = true;
                                 break;
                             }
@@ -973,7 +1051,7 @@ int main( int argc, char* args[] )
                             SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
                             SDL_RenderClear( gRenderer );
 
-                            endGame.render();
+                            endGame.render(0);
 
                             for (int f = 0; f<3; f++)
                             {
@@ -1011,6 +1089,21 @@ int main( int argc, char* args[] )
                     {
                         level[1]++;
                         level[0]= level[0]-10;
+                    }
+                    if (level[1] == 2)
+                    {
+                        //Clear screen
+                        SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+                        SDL_RenderClear( gRenderer );
+
+                        endGame.render(1);
+
+                        //Update screen
+                        SDL_RenderPresent( gRenderer );
+
+                        Sleep(10000);
+                        quit = true;
+                        break;
                     }
                     //Add more enemies
                     totalEnemies= totalEnemies + 5;
