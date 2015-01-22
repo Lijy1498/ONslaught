@@ -415,6 +415,8 @@ public:
 
     bool inFlight = false;
     bool enemy = false;
+    bool pulse = false;
+    bool sideGun = false;
 
     void setxy(int inputx, int inputy);
 
@@ -423,9 +425,13 @@ public:
 
 private:
     //Sprite for the bullet
-    Sprite sprite;
+    Sprite normal;
     //Sprite for the bullet
-    Sprite sprite2;
+    Sprite enemyBullet;
+    //Sprite for the bullet
+    Sprite pulseGun;
+    //Sprite for the bullet
+    Sprite dualGuns;
 
     //The X and Y offsets of the dot
     int x, y;
@@ -433,24 +439,37 @@ private:
 
 bullet::bullet()
 {
-    LoadBitmap(sprite,"bullet.bmp");
-    LoadBitmap(sprite2,"EnemyBullet.bmp");
+    LoadBitmap(normal,"bullet.bmp");
+    LoadBitmap(enemyBullet,"EnemyBullet.bmp");
+    LoadBitmap(pulseGun,"pulseBullet.bmp");
+    LoadBitmap(dualGuns,"sideBullet.bmp");
 }
 
 bullet::~bullet()
 {
-    sprite.free();
+    normal.free();
+    enemyBullet.free();
+    pulseGun.free();
+    dualGuns.free();
 }
 
 void bullet::render()
 {
-    if (!enemy)
+    if (pulse)
     {
-        sprite.render(x,y);
+        pulseGun.render(x,y);
+    }
+    else if (sideGun)
+    {
+        dualGuns.render(x,y);
+    }
+    else if (!enemy)
+    {
+        normal.render(x,y);
     }
     else if (enemy)
     {
-        sprite2.render(x,y);
+        enemyBullet.render(x,y);
     }
 }
 
@@ -462,7 +481,15 @@ void bullet:: setxy(int inputx, int inputy)
 
 void bullet::move()
 {
-    if (!enemy)
+    if (pulse)
+    {
+        y = y - 8;
+    }
+    else if (sideGun)
+    {
+
+    }
+    else if (!enemy)
     {
         y = y - 3;
     }
@@ -511,6 +538,9 @@ public:
 
     //Check if shield is active
     bool shieldOn = false;
+
+    //Check if speed is active
+    bool speed = false;
 
     //Check if they can fire a bullet
     bool Bullet = false;
@@ -610,6 +640,26 @@ void Player::check()
     {
         vy = 0;
         vx = 0;
+    }
+
+    if (speed)
+    {
+        if (vx == -5)
+        {
+            vx = vx - 2;
+        }
+        else if (vx == 5)
+        {
+            vx = vx + 2;
+        }
+        if (vy == -5)
+        {
+            vy = vy - 2;
+        }
+        else if (vy == 5)
+        {
+            vy = vy + 2;
+        }
     }
 }
 
@@ -1084,7 +1134,7 @@ int main( int argc, char* args[] )
                                 }
                             }
 
-                            random = 1;
+                            random = 4;
                             if (random <= 5 and powers.exist == false)
                             {
                                 powers.i = random;
@@ -1110,6 +1160,13 @@ int main( int argc, char* args[] )
                 }
                 else if (f == 6)
                 {
+                    if (MyBullet[1].pulse)
+                    {
+                        for (int i = 0; i < 20; i++)
+                        {
+                            MyBullet[i].pulse = false;
+                        }
+                    }
                     totalBullets = 0;
                     user.Bullet = false;
                     once = true;
@@ -1353,7 +1410,7 @@ int main( int argc, char* args[] )
                     break;
 
                 case 2:
-                    // user.speed = true;
+                    user.speed = true;
                     break;
 
                 case 3:
@@ -1364,7 +1421,10 @@ int main( int argc, char* args[] )
                     break;
 
                 case 4:
-                    // bullet.pulse = true;
+                    for (int i = 0; i < 20; i++)
+                    {
+                        MyBullet[i].pulse = true;
+                    }
                     break;
 
                 case 5:
