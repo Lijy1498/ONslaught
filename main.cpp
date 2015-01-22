@@ -851,6 +851,7 @@ int main( int argc, char* args[] )
     bool restarted = false;
     int powerX, powerY;
     bool shield = false;
+    int quitPowerUp = 0;
 
     level [0]=1;
     level [1]=0;
@@ -993,6 +994,16 @@ int main( int argc, char* args[] )
                 }
             }
 
+            if (user.speed)
+            {
+                quitPowerUp++;
+                if (quitPowerUp == 1000)
+                {
+                    user.speed = false;
+                    quitPowerUp = 0;
+                }
+            }
+
             user.check();
 
             //Clear screen
@@ -1045,7 +1056,8 @@ int main( int argc, char* args[] )
                                 }
                             }
 
-                            random = rand()%3+1;
+                            //random = rand()%20;
+                            random = 2;
                             if (random <= 4 and powers.exist == false)
                             {
                                 powers.i = random;
