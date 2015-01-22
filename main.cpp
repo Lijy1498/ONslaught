@@ -1003,6 +1003,15 @@ int main( int argc, char* args[] )
                     quitPowerUp = 0;
                 }
             }
+            else if (powers.exist)
+            {
+                quitPowerUp++;
+                if (quitPowerUp == 500)
+                {
+                    powers.exist = false;
+                    quitPowerUp = 0;
+                }
+            }
 
             user.check();
 
@@ -1056,7 +1065,7 @@ int main( int argc, char* args[] )
                                 }
                             }
 
-                            random = rand()%20;
+                            random = rand()%10;
                             if (random <= 4 and powers.exist == false)
                             {
                                 powers.i = random;
@@ -1176,11 +1185,17 @@ int main( int argc, char* args[] )
                                                     menu = 2;
                                                     level [0]=0;
                                                     level [1]=0;
+                                                    powers.exist = false;
+                                                    user.speed = false;
+                                                    shield = false;
+                                                    user.shieldOn = false;
+                                                    quitPowerUp = 0;
                                                     restarted = true;
                                                     user.setxy(SCREEN_WIDTH/4,SCREEN_HEIGHT - 35);
                                                     user.Bullet = false;
-                                                    for (int g = 0; g < 7; g++)
+                                                    for (int g = 0; g < 20; g++)
                                                     {
+                                                        MyBullet[g].pulse = false;
                                                         MyBullet[g].inFlight = false;
                                                         MyBullet[g].setxy(-20,-70);
                                                     }
@@ -1287,11 +1302,17 @@ int main( int argc, char* args[] )
                                                 menu = 2;
                                                 level [0]=0;
                                                 level [1]=0;
+                                                powers.exist = false;
+                                                user.speed = false;
+                                                shield = false;
+                                                user.shieldOn = false;
+                                                quitPowerUp = 0;
                                                 restarted = true;
                                                 user.setxy(SCREEN_WIDTH/4,SCREEN_HEIGHT - 35);
                                                 user.Bullet = false;
-                                                for (int g = 0; g < 7; g++)
+                                                for (int g = 0; g < 20; g++)
                                                 {
+                                                    MyBullet[g].pulse = false;
                                                     MyBullet[g].inFlight = false;
                                                     MyBullet[g].setxy(-20,-70);
                                                 }
@@ -1322,7 +1343,7 @@ int main( int argc, char* args[] )
                 }
             }
 
-            if (powerX+16 >= user.getX() and powerX+16 <= user.getX()+32 and powerY+16 >= user.getY() and powerY+16 <= user.getY()+32)
+            if (powerX+16 >= user.getX() and powerX+16 <= user.getX()+32 and powerY+16 >= user.getY() and powerY+16 <= user.getY()+32 and powers.exist)
             {
                 switch (powers.i)
                 {
