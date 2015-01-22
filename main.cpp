@@ -148,6 +148,85 @@ void ScoreBoard::render()
     sprite.render(x,y);
 }
 
+class PowerUp
+{
+public:
+    static const int WIDTH = 32;
+    static const int HEIGHT = 32;
+
+    //Initializes the variables
+    PowerUp();
+    ~PowerUp();
+
+    int i;
+
+    bool exist = false;
+
+    //Shows the dot on the screen
+    void render();
+    void setxy(int inputx, int inputy);
+
+private:
+    //Sprite for the PowerUp
+    Sprite shield;
+    Sprite speed;
+    Sprite life;
+    Sprite pulse;
+    Sprite sideGun;
+
+    int x, y;
+};
+
+PowerUp::PowerUp()
+{
+    LoadBitmap(shield,"PowerUpShield.bmp");
+    LoadBitmap(speed,"PowerUpSpeed.bmp");
+    LoadBitmap(life,"PowerUpLife.bmp");
+    LoadBitmap(pulse,"PowerUpPulse.bmp");
+    LoadBitmap(sideGun,"PowerUpSide.bmp");
+}
+
+PowerUp::~PowerUp()
+{
+    shield.free();
+    speed.free();
+    life.free();
+    pulse.free();
+    sideGun.free();
+}
+
+void PowerUp::setxy(int inputx, int inputy)
+{
+    x = inputx;
+    y = inputy;
+}
+
+void PowerUp::render()
+{
+    switch(i)
+    {
+    case 1:
+        shield.render(x,y);
+        break;
+
+    case 2:
+        speed.render(x,y);
+        break;
+
+    case 3:
+        life.render(x,y);
+        break;
+
+    case 4:
+        pulse.render(x,y);
+        break;
+
+    case 5:
+        sideGun.render(x,y);
+        break;
+    }
+}
+
 class Menus
 {
 public:
@@ -430,17 +509,24 @@ public:
     //Get Y
     int getY();
 
+    //Check if shield is active
+    bool shieldOn = false;
+
     //Check if they can fire a bullet
-    bool noBullet = false;
+    bool Bullet = false;
 
     //Shows the dot on the screen
     void render();
 
 private:
     //Sprite for the Player
-    Sprite sprite;
+    Sprite normal;
     //Sprite for the Player
-    Sprite sprite2;
+    Sprite noBullet;
+    //Sprite for the Player
+    Sprite normalS;
+    //Sprite for the Player
+    Sprite noBulletS;
 
     //The X and Y offsets of the dot
     int x, y;
@@ -453,22 +539,28 @@ Player::Player()
 {
     //Initialize the offsets
     x = SCREEN_WIDTH/4;
-    y = SCREEN_HEIGHT - sprite.getHeight()- 3;
+    y = SCREEN_HEIGHT - 35;
 
     //Initialize the velocity
     vx = 0;
     vy = 0;
 
     //Load dot texture
-    LoadBitmap(sprite,"player.bmp");
+    LoadBitmap(normal,"player.bmp");
     //Load dot texture
-    LoadBitmap(sprite2,"playerNoBullet.bmp");
+    LoadBitmap(noBullet,"playerNoBullet.bmp");
+    //Load dot texture
+    LoadBitmap(normalS,"playerShield.bmp");
+    //Load dot texture
+    LoadBitmap(noBulletS,"playerShieldNoBullet.bmp");
 }
 
 Player::~Player()
 {
-    sprite.free();
-    sprite2.free();
+    normal.free();
+    noBullet.free();
+    normalS.free();
+    noBulletS.free();
 }
 
 void Player::check()
@@ -553,10 +645,10 @@ void Player::move()
         vx = 0;
         x = 0;
     }
-    else if( x + sprite.getWidth() > SCREEN_WIDTH - SCREEN_WIDTH/4 )
+    else if( x + normal.getWidth() > SCREEN_WIDTH - SCREEN_WIDTH/4 )
     {
         vx = 0;
-        x =  SCREEN_WIDTH - SCREEN_WIDTH/4  - sprite.getWidth();
+        x =  SCREEN_WIDTH - SCREEN_WIDTH/4  - normal.getWidth();
     }
 
     //Move the dot up or down
@@ -568,23 +660,37 @@ void Player::move()
         vy = 0;
         y = 0;
     }
-    else if( y + sprite.getHeight() > SCREEN_HEIGHT )
+    else if( y + normal.getHeight() > SCREEN_HEIGHT )
     {
         vy = 0;
-        y =  SCREEN_HEIGHT - sprite.getHeight();
+        y =  SCREEN_HEIGHT - normal.getHeight();
     }
 
 }
 
 void Player::render()
 {
-    if (noBullet)
+    if (shieldOn)
     {
-        sprite2.render(x,y);
+        if (Bullet)
+        {
+            noBulletS.render(x,y);
+        }
+        else
+        {
+            normalS.render(x,y);
+        }
     }
     else
     {
-        sprite.render(x,y);
+        if (Bullet)
+        {
+            noBullet.render(x,y);
+        }
+        else
+        {
+            normal.render(x,y);
+        }
     }
 }
 
@@ -782,6 +888,8 @@ int main( int argc, char* args[] )
     int menu = 2;
     bool openMenu = true;
     bool restarted = false;
+    int powerX, powerY;
+    bool shield = false;
 
     level [0]=1;
     level [1]=0;
@@ -812,6 +920,7 @@ int main( int argc, char* args[] )
         ScoreBoard board;
         Life hearts[3];
         Menus endGame;
+        PowerUp powers;
 
         while (openMenu)
         {
@@ -929,9 +1038,15 @@ int main( int argc, char* args[] )
             SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
             SDL_RenderClear( gRenderer );
 
+
+            if (powers.exist)
+            {
+                powers.render();
+            }
+
             if (once and totalBullets == 7)
             {
-                user.noBullet = true;
+                user.Bullet = true;
                 once = false;
             }
 
@@ -968,6 +1083,17 @@ int main( int argc, char* args[] )
                                     }
                                 }
                             }
+
+                            random = 1;
+                            if (random <= 5 and powers.exist == false)
+                            {
+                                powers.i = random;
+                                powerX=enemies[x].getX();
+                                powerY=enemies[x].getY();
+                                powers.setxy(powerX,powerY);
+                                powers.exist = true;
+                            }
+
                             MyBullet[f].inFlight = false;
                             enemies[x].alive = false;
                             enemies[x].setxy(-50,-50);
@@ -985,7 +1111,7 @@ int main( int argc, char* args[] )
                 else if (f == 6)
                 {
                     totalBullets = 0;
-                    user.noBullet = false;
+                    user.Bullet = false;
                     once = true;
                 }
             }
@@ -1021,9 +1147,128 @@ int main( int argc, char* args[] )
 
                         if (EnemyBullet[f].getX() >= user.getX() and EnemyBullet[f].getX() <= user.getX()+32 and EnemyBullet[f].getY() >= user.getY() and EnemyBullet[f].getY() <= user.getY()+32)
                         {
-                            lives= lives - 1;
-                            EnemyBullet[f].setxy(10000,10000);
+                            if (shield)
+                            {
+                                shield = false;
+                                user.shieldOn = false;
+                                EnemyBullet[f].setxy(10000,10000);
+                            }
+                            else
+                            {
+                                lives= lives - 1;
+                                EnemyBullet[f].setxy(10000,10000);
 
+                                if (lives == 0)
+                                {
+                                    //Clear screen
+                                    SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+                                    SDL_RenderClear( gRenderer );
+
+                                    endGame.render(0);
+
+                                    for (int f = 0; f<3; f++)
+                                    {
+                                        points[f].setxy(515-f*50,325);
+                                        points[f].render(score[f]);
+                                    }
+                                    //Update screen
+                                    SDL_RenderPresent( gRenderer );
+                                    while (openMenu)
+                                    {
+                                        //Handle events on queue
+                                        while( SDL_PollEvent( &e ) != 0 )
+                                        {
+                                            if( e.type == SDL_KEYDOWN )
+                                            {
+                                                switch( e.key.keysym.sym )
+                                                {
+                                                case SDLK_ESCAPE:
+                                                    quit = true;
+                                                    openMenu = false;
+                                                    break;
+
+                                                case SDLK_SPACE:
+                                                    totalBullets = 0;
+                                                    once = true;
+                                                    totalEnemies = 5;
+                                                    layer = 0;
+                                                    counter = 1;
+                                                    lives = 3;
+                                                    menu = 2;
+                                                    level [0]=0;
+                                                    level [1]=0;
+                                                    restarted = true;
+                                                    user.setxy(SCREEN_WIDTH/4,SCREEN_HEIGHT - 35);
+                                                    user.Bullet = false;
+                                                    for (int g = 0; g < 7; g++)
+                                                    {
+                                                        MyBullet[g].inFlight = false;
+                                                        MyBullet[g].setxy(-20,-70);
+                                                    }
+                                                    for (int g = 0; g < totalEnemies; g++)
+                                                    {
+                                                        enemies[g].alive = false;
+                                                        enemies[g].setxy(-20,-20);
+                                                    }
+                                                    for (int x = 0; x < 3; x++)
+                                                    {
+                                                        score[x]=0;
+                                                    }
+
+                                                    openMenu = false;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    openMenu = true;
+                                }
+                            }
+                        }
+                    }
+
+                    //Move the enemies
+                    enemies[f].move();
+
+                    //Render enemies
+                    enemies[f].render();
+
+                    if (enemies[f].getX() >= user.getX() and enemies[f].getX() <= user.getX()+32 and enemies[f].getY() >= user.getY() and enemies[f].getY() <= user.getY()+32 and enemies[f].getX()+22 >= user.getX() and enemies[f].getX()+22 <= user.getX()+32 and enemies[f].getY()+20 >= user.getY() and enemies[f].getY()+20 <= user.getY()+32)
+                    {
+                        if (shield)
+                        {
+                            shield = false;
+                            user.shieldOn = false;
+                            enemies[f].alive = false;
+                            enemies[f].setxy(-50,-50);
+                            score[0] = score[0] + 1;
+                                while (score[0] >= 10)
+                                {
+                                    score[1]++;
+                                    score[0]= score[0]-10;
+                                    while (score[1]>=10)
+                                    {
+                                        score[2]++;
+                                        score[1] = score[1] - 10;
+                                    }
+                                }
+                        }
+                        else
+                        {
+                            lives = lives - 1;
+                            enemies[f].alive = false;
+                            enemies[f].setxy(-50,-50);
+                            score[0] = score[0] + 1;
+                                while (score[0] >= 10)
+                                {
+                                    score[1]++;
+                                    score[0]= score[0]-10;
+                                    while (score[1]>=10)
+                                    {
+                                        score[2]++;
+                                        score[1] = score[1] - 10;
+                                    }
+                                }
                             if (lives == 0)
                             {
                                 //Clear screen
@@ -1065,7 +1310,7 @@ int main( int argc, char* args[] )
                                                 level [1]=0;
                                                 restarted = true;
                                                 user.setxy(SCREEN_WIDTH/4,SCREEN_HEIGHT - 35);
-                                                user.noBullet = false;
+                                                user.Bullet = false;
                                                 for (int g = 0; g < 7; g++)
                                                 {
                                                     MyBullet[g].inFlight = false;
@@ -1091,89 +1336,42 @@ int main( int argc, char* args[] )
                             }
                         }
                     }
-
-                    //Move the enemies
-                    enemies[f].move();
-
-                    //Render enemies
-                    enemies[f].render();
-
-                    if (enemies[f].getX() >= user.getX() and enemies[f].getX() <= user.getX()+32 and enemies[f].getY() >= user.getY() and enemies[f].getY() <= user.getY()+32 and enemies[f].getX()+22 >= user.getX() and enemies[f].getX()+22 <= user.getX()+32 and enemies[f].getY()+20 >= user.getY() and enemies[f].getY()+20 <= user.getY()+32)
-                    {
-                        lives = lives - 1;
-                        enemies[f].alive = false;
-                        enemies[f].setxy(-50,-50);
-                        if (lives == 0)
-                            {
-                                //Clear screen
-                                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
-                                SDL_RenderClear( gRenderer );
-
-                                endGame.render(0);
-
-                                for (int f = 0; f<3; f++)
-                                {
-                                    points[f].setxy(515-f*50,325);
-                                    points[f].render(score[f]);
-                                }
-                                //Update screen
-                                SDL_RenderPresent( gRenderer );
-                                while (openMenu)
-                                {
-                                    //Handle events on queue
-                                    while( SDL_PollEvent( &e ) != 0 )
-                                    {
-                                        if( e.type == SDL_KEYDOWN )
-                                        {
-                                            switch( e.key.keysym.sym )
-                                            {
-                                            case SDLK_ESCAPE:
-                                                quit = true;
-                                                openMenu = false;
-                                                break;
-
-                                            case SDLK_SPACE:
-                                                totalBullets = 0;
-                                                once = true;
-                                                totalEnemies = 5;
-                                                layer = 0;
-                                                counter = 1;
-                                                lives = 3;
-                                                menu = 2;
-                                                level [0]=0;
-                                                level [1]=0;
-                                                restarted = true;
-                                                user.setxy(SCREEN_WIDTH/4,SCREEN_HEIGHT - 35);
-                                                user.noBullet = false;
-                                                for (int g = 0; g < 7; g++)
-                                                {
-                                                    MyBullet[g].inFlight = false;
-                                                    MyBullet[g].setxy(-20,-70);
-                                                }
-                                                for (int g = 0; g < totalEnemies; g++)
-                                                {
-                                                    enemies[g].alive = false;
-                                                    enemies[g].setxy(-20,-20);
-                                                }
-                                                for (int x = 0; x < 3; x++)
-                                                {
-                                                    score[x]=0;
-                                                }
-
-                                                openMenu = false;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                openMenu = true;
-                            }
-                    }
                     if (enemies[f].getY() > SCREEN_HEIGHT+25)
                     {
                         enemies[f].setxy(enemies[f].getX(),-30);
                     }
                 }
+            }
+
+            if (powerX >= user.getX() and powerX <= user.getX()+32 and powerY >= user.getY() and powerY <= user.getY()+32)
+            {
+                switch (powers.i)
+                {
+                case 1:
+                    shield = true;
+                    user.shieldOn = true;
+                    break;
+
+                case 2:
+                    // user.speed = true;
+                    break;
+
+                case 3:
+                    if (lives != 3)
+                    {
+                        lives++;
+                    }
+                    break;
+
+                case 4:
+                    // bullet.pulse = true;
+                    break;
+
+                case 5:
+                    // bullet.sideGun = true;
+                    break;
+                }
+                powers.exist = false;
             }
 
             //Check if enemies are alive
