@@ -28,6 +28,9 @@ public:
     //Loads image at specified path
     bool loadFromFile( std::string path );
 
+    //Function to load files from specified path
+    void LoadBitmap(Sprite &s, const std::string& name);
+
     //Deallocates sprite
     void free();
 
@@ -47,15 +50,6 @@ private:
     int mHeight;
 };
 
-void LoadBitmap(Sprite &s, const std::string& name)
-{
-    if( !s.loadFromFile( name ) )
-    {
-        printf( "Failed to load dot texture!\n" );
-    }
-}
-
-
 class Score
 {
 public:
@@ -64,7 +58,6 @@ public:
 
     //Initializes the variables
     Score();
-    ~Score();
 
     //Shows the dot on the screen
     void render(int number);
@@ -79,24 +72,16 @@ private:
 
 Score::Score()
 {
-    LoadBitmap(numbers[0],"0.bmp");
-    LoadBitmap(numbers[1],"1.bmp");
-    LoadBitmap(numbers[2],"2.bmp");
-    LoadBitmap(numbers[3],"3.bmp");
-    LoadBitmap(numbers[4],"4.bmp");
-    LoadBitmap(numbers[5],"5.bmp");
-    LoadBitmap(numbers[6],"6.bmp");
-    LoadBitmap(numbers[7],"7.bmp");
-    LoadBitmap(numbers[8],"8.bmp");
-    LoadBitmap(numbers[9],"9.bmp");
-}
-
-Score::~Score()
-{
-    for (int i = 0; i < 10; i++)
-    {
-        numbers[i].free();
-    }
+    numbers[0].LoadBitmap(numbers[0],"0.bmp");
+    numbers[1].LoadBitmap(numbers[1],"1.bmp");
+    numbers[2].LoadBitmap(numbers[2],"2.bmp");
+    numbers[3].LoadBitmap(numbers[3],"3.bmp");
+    numbers[4].LoadBitmap(numbers[4],"4.bmp");
+    numbers[5].LoadBitmap(numbers[5],"5.bmp");
+    numbers[6].LoadBitmap(numbers[6],"6.bmp");
+    numbers[7].LoadBitmap(numbers[7],"7.bmp");
+    numbers[8].LoadBitmap(numbers[8],"8.bmp");
+    numbers[9].LoadBitmap(numbers[9],"9.bmp");
 }
 
 void Score::setxy(int inputx,int inputy)
@@ -118,7 +103,6 @@ public:
 
     //Initializes the variables
     ScoreBoard();
-    ~ScoreBoard();
 
     //Shows the dot on the screen
     void render();
@@ -133,14 +117,9 @@ private:
 
 ScoreBoard::ScoreBoard()
 {
-    LoadBitmap(sprite,"Scoreboard.bmp");
+    sprite.LoadBitmap(sprite,"Scoreboard.bmp");
     x=480;
     y=0;
-}
-
-ScoreBoard::~ScoreBoard()
-{
-    sprite.free();
 }
 
 void ScoreBoard::render()
@@ -156,7 +135,6 @@ public:
 
     //Initializes the variables
     PowerUp();
-    ~PowerUp();
 
     int i;
 
@@ -172,27 +150,16 @@ private:
     Sprite speed;
     Sprite life;
     Sprite pulse;
-    Sprite sideGun;
 
     int x, y;
 };
 
 PowerUp::PowerUp()
 {
-    LoadBitmap(shield,"PowerUpShield.bmp");
-    LoadBitmap(speed,"PowerUpSpeed.bmp");
-    LoadBitmap(life,"PowerUpLife.bmp");
-    LoadBitmap(pulse,"PowerUpPulse.bmp");
-    LoadBitmap(sideGun,"PowerUpSide.bmp");
-}
-
-PowerUp::~PowerUp()
-{
-    shield.free();
-    speed.free();
-    life.free();
-    pulse.free();
-    sideGun.free();
+    shield.LoadBitmap(shield,"PowerUpShield.bmp");
+    speed.LoadBitmap(speed,"PowerUpSpeed.bmp");
+    life.LoadBitmap(life,"PowerUpLife.bmp");
+    pulse.LoadBitmap(pulse,"PowerUpPulse.bmp");
 }
 
 void PowerUp::setxy(int inputx, int inputy)
@@ -220,10 +187,6 @@ void PowerUp::render()
     case 4:
         pulse.render(x,y);
         break;
-
-    case 5:
-        sideGun.render(x,y);
-        break;
     }
 }
 
@@ -235,7 +198,6 @@ public:
 
     //Initializes the variables
     Menus();
-    ~Menus();
 
     //Shows the dot on the screen
     void render(int menu);
@@ -250,18 +212,10 @@ private:
 
 Menus::Menus()
 {
-    LoadBitmap(gameOver,"gameOver.bmp");
-    LoadBitmap(victory,"win.bmp");
-    LoadBitmap(menuStart,"menuStart.bmp");
-    LoadBitmap(menuQuit,"menuQuit.bmp");
-}
-
-Menus::~Menus()
-{
-    gameOver.free();
-    victory.free();
-    menuStart.free();
-    menuQuit.free();
+    gameOver.LoadBitmap(gameOver,"gameOver.bmp");
+    victory.LoadBitmap(victory,"win.bmp");
+    menuStart.LoadBitmap(menuStart,"menuStart.bmp");
+    menuQuit.LoadBitmap(menuQuit,"menuQuit.bmp");
 }
 
 void Menus::render(int menu)
@@ -292,7 +246,6 @@ public:
 
     //Initializes the variables
     Life();
-    ~Life();
 
     //Shows the dot on the screen
     void render();
@@ -309,12 +262,7 @@ private:
 
 Life::Life()
 {
-    LoadBitmap(sprite,"heart.bmp");
-}
-
-Life::~Life()
-{
-    sprite.free();
+    sprite.LoadBitmap(sprite,"heart.bmp");
 }
 
 void Life::render()
@@ -336,7 +284,6 @@ public:
 
     //Initializes the variables
     Enemy();
-    ~Enemy();
 
     //Moves the dot
     void move();
@@ -360,12 +307,7 @@ private:
 
 Enemy::Enemy()
 {
-    LoadBitmap(sprite,"enemy.bmp");
-}
-
-Enemy::~Enemy()
-{
-    sprite.free();
+    sprite.LoadBitmap(sprite,"enemy.bmp");
 }
 
 void Enemy:: setxy(int inputx, int inputy)
@@ -402,7 +344,6 @@ public:
 
     //Initializes the variables
     bullet();
-    ~bullet();
 
     //Moves the dot
     void move();
@@ -430,8 +371,6 @@ private:
     Sprite enemyBullet;
     //Sprite for the bullet
     Sprite pulseGun;
-    //Sprite for the bullet
-    Sprite dualGuns;
 
     //The X and Y offsets of the dot
     int x, y;
@@ -439,18 +378,9 @@ private:
 
 bullet::bullet()
 {
-    LoadBitmap(normal,"bullet.bmp");
-    LoadBitmap(enemyBullet,"EnemyBullet.bmp");
-    LoadBitmap(pulseGun,"pulseBullet.bmp");
-    LoadBitmap(dualGuns,"sideBullet.bmp");
-}
-
-bullet::~bullet()
-{
-    normal.free();
-    enemyBullet.free();
-    pulseGun.free();
-    dualGuns.free();
+    normal.LoadBitmap(normal,"bullet.bmp");
+    enemyBullet.LoadBitmap(enemyBullet,"EnemyBullet.bmp");
+    pulseGun.LoadBitmap(pulseGun,"pulseBullet.bmp");
 }
 
 void bullet::render()
@@ -458,10 +388,6 @@ void bullet::render()
     if (pulse)
     {
         pulseGun.render(x,y);
-    }
-    else if (sideGun)
-    {
-        dualGuns.render(x,y);
     }
     else if (!enemy)
     {
@@ -484,10 +410,6 @@ void bullet::move()
     if (pulse)
     {
         y = y - 8;
-    }
-    else if (sideGun)
-    {
-
     }
     else if (!enemy)
     {
@@ -517,7 +439,6 @@ public:
 
     //Initializes the variables
     Player();
-    ~Player();
 
     //Takes key presses and adjusts the dot's velocity
     void handleEvent( SDL_Event& e );
@@ -576,21 +497,13 @@ Player::Player()
     vy = 0;
 
     //Load dot texture
-    LoadBitmap(normal,"player.bmp");
+    normal.LoadBitmap(normal,"player.bmp");
     //Load dot texture
-    LoadBitmap(noBullet,"playerNoBullet.bmp");
+    noBullet.LoadBitmap(noBullet,"playerNoBullet.bmp");
     //Load dot texture
-    LoadBitmap(normalS,"playerShield.bmp");
+    normalS.LoadBitmap(normalS,"playerShield.bmp");
     //Load dot texture
-    LoadBitmap(noBulletS,"playerShieldNoBullet.bmp");
-}
-
-Player::~Player()
-{
-    normal.free();
-    noBullet.free();
-    normalS.free();
-    noBulletS.free();
+    noBulletS.LoadBitmap(noBulletS,"playerShieldNoBullet.bmp");
 }
 
 void Player::check()
@@ -759,16 +672,6 @@ int Player::getY()
 {
     return y;
 }
-
-/*//Starts up SDL and creates window
-bool init();
-
-//Loads media
-bool loadMedia();
-
-//Frees media and shuts down SDL
-void close();
-*/
 //The window we'll be rendering to
 SDL_Window* gWindow = NULL;
 
@@ -826,6 +729,14 @@ bool Sprite::loadFromFile( std::string path )
     //Return success
     mSprite = newTexture;
     return mSprite != NULL;
+}
+
+void Sprite::LoadBitmap(Sprite &s, const std::string& name)
+{
+    if( !s.loadFromFile( name ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+    }
 }
 
 void Sprite::free()
@@ -1134,8 +1045,8 @@ int main( int argc, char* args[] )
                                 }
                             }
 
-                            random = 4;
-                            if (random <= 5 and powers.exist == false)
+                            random = rand()%3+1;
+                            if (random <= 4 and powers.exist == false)
                             {
                                 powers.i = random;
                                 powerX=enemies[x].getX();
@@ -1400,7 +1311,7 @@ int main( int argc, char* args[] )
                 }
             }
 
-            if (powerX >= user.getX() and powerX <= user.getX()+32 and powerY >= user.getY() and powerY <= user.getY()+32)
+            if (powerX+16 >= user.getX() and powerX+16 <= user.getX()+32 and powerY+16 >= user.getY() and powerY+16 <= user.getY()+32)
             {
                 switch (powers.i)
                 {
@@ -1425,10 +1336,6 @@ int main( int argc, char* args[] )
                     {
                         MyBullet[i].pulse = true;
                     }
-                    break;
-
-                case 5:
-                    // bullet.sideGun = true;
                     break;
                 }
                 powers.exist = false;
