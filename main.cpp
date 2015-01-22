@@ -997,7 +997,7 @@ int main( int argc, char* args[] )
             if (user.speed)
             {
                 quitPowerUp++;
-                if (quitPowerUp == 1000)
+                if (quitPowerUp == 500)
                 {
                     user.speed = false;
                     quitPowerUp = 0;
@@ -1056,8 +1056,7 @@ int main( int argc, char* args[] )
                                 }
                             }
 
-                            //random = rand()%20;
-                            random = 2;
+                            random = rand()%20;
                             if (random <= 4 and powers.exist == false)
                             {
                                 powers.i = random;
